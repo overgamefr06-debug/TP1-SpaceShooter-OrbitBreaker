@@ -1,6 +1,6 @@
 # Orbit Breaker — TP1 Space Shooter
 
-Prototype jouable réalisé avec Unreal Engine 5.8.3. Logique de jeu en C++, paramètres et références des assets dans les Blueprints. Troisième jalon : boucle de partie et direction artistique.
+Prototype jouable réalisé avec Unreal Engine 5.8.3. Logique de jeu en C++, paramètres et références des assets dans les Blueprints. Version jouable avec exercices de gestion de versions et vidéo de démonstration.
 
 ## Ouvrir et jouer
 
@@ -52,7 +52,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Partie : écran initial, apparitions temporisées, positions sur les bords, déplacement après impulsion, score, collisions physiques, protection temporaire, dernière vie, arrêt du score, redémarrage et retour au menu.
 - Menu et assets inspectés visuellement dans le jeu Development; lancement depuis le bouton et fin de partie observés. La révision de police a ensuite été inspectée visuellement.
 - Build Windows autonome lancé et menu affiché. Le test automatisé des commandes a été effectué dans l'éditeur; ne pas le confondre avec un test manuel exhaustif du build.
-- Taille du build complet : **364 531 345 octets**, soit **364,53 Mo**, sous la limite de 500 Mo. Cette version reste un jalon de développement, pas la remise finale.
+- Taille du build complet : **363 202 611 octets**, soit **363,20 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La remise reste incomplète tant que GitHub et sa capture ne sont pas publiés.
 
 ## Gestion de versions et travail restant
 
@@ -60,4 +60,10 @@ Le dossier de travail `SpaceShooter` correspond au stream Perforce `//20263_8PRO
 
 Les branches Git locales `main` et `dev` existent. Git et Perforce ont des historiques distincts. Ne pas changer de branche Git au milieu de modifications Perforce. Le premier envoi Perforce est 5801 sur main, le peuplement de dev 5803, et le jalon tir/destruction 5847 sur dev.
 
-Avant la remise : créer/publier le dépôt GitHub public, réaliser et documenter les conflits volontaires Git et Perforce, intégrer la version finale sur main, enregistrer `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`, puis refaire un contrôle final du build. Ces éléments ne sont pas encore réalisés. Les notes et transcriptions des cours restent hors du projet remis.
+Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Docs/Conflits_revision_control.md`, avec les sorties brutes des deux outils. Le commit de fusion Git conserve ses deux parents; Perforce contient les changements 5901 à 5905. Le jeu et le build ont été intégrés sur main dans Perforce (5902).
+
+`Files/PerforceCommits.png` est une capture réelle de P4V montrant les changements main/dev et la résolution.
+
+`Files/VideoDemoJeux.mp4` contient 34 secondes de gameplay réel capturé dans Unreal : menu, quatre directions, tirs, score, collisions, perte des trois vies, fin de partie et nouvelle partie. Les commandes sont simulées par l'outil d'enregistrement Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build du jeu. Les images du viewport sont assemblées en respectant leurs horodatages; la vidéo est muette, la capture audio hors écran n'étant pas correctement synchronisée. Le jeu lui-même dispose de sons. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
+
+Avant la remise : connecter GitHub, créer/publier le dépôt public avec main et dev, puis enregistrer sa véritable capture d'historique dans `Files/GithubCommits.png`. Aucun dépôt distant GitHub n'est encore configuré. Les notes et transcriptions des cours restent hors du projet remis.

@@ -1,0 +1,3 @@
+C:\Users\Over\Desktop\Tp1 Unreal\SpaceShooter\Docs\ExerciceConflit.md - merging //20263_8PRO135_KEVIN_ORTEGA/main/Docs/ExerciceConflit.md#2
+Diff chunks: 0 yours + 0 theirs + 0 both + 1 conflicting
+//kortega_tp1_dev_DESKTOP_6NT64UN/Docs/ExerciceConflit.md - resolve skipped.
