@@ -27,6 +27,7 @@ public:
     TObjectPtr<UStaticMeshComponent> Hull;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
     TObjectPtr<UStaticMeshComponent> Wings;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components") TObjectPtr<UStaticMeshComponent> EngineGlow;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
     TObjectPtr<UFloatingPawnMovement> Movement;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Movement", meta=(ClampMin="1"))
@@ -46,6 +47,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Ship|Weapon")
     void TryFire();
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Effects") TSubclassOf<ACombatBurst> DamageEffectClass;
 
 protected:
     virtual void BeginPlay() override;
@@ -54,9 +56,14 @@ protected:
 private:
     void Move(const FInputActionValue& Value);
     void RestartArena();
+    void OpenMenu();
+    void StartFromMenu();
+    UFUNCTION() void OnContact(UPrimitiveComponent* Overlapped, AActor* Other, UPrimitiveComponent* OtherComponent, int32 BodyIndex, bool bSweep, const FHitResult& Hit);
     double LastShotTime = -1.e10;
     UPROPERTY() TObjectPtr<UInputAction> MoveAction;
     UPROPERTY() TObjectPtr<UInputAction> FireAction;
     UPROPERTY() TObjectPtr<UInputAction> RestartAction;
+    UPROPERTY() TObjectPtr<UInputAction> MenuAction;
+    UPROPERTY() TObjectPtr<UInputAction> StartAction;
     UPROPERTY() TObjectPtr<UInputMappingContext> MappingContext;
 };

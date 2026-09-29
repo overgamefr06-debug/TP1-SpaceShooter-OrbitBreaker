@@ -1,6 +1,7 @@
 #include "CombatBurst.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 ACombatBurst::ACombatBurst()
 {
@@ -21,6 +22,7 @@ ACombatBurst::ACombatBurst()
 void ACombatBurst::BeginPlay()
 {
     Super::BeginPlay();
+    if (Sound) UGameplayStatics::PlaySound2D(this, Sound, .28f, FMath::FRandRange(.92f,1.08f));
     for (const auto& Fragment : Fragments)
     {
         Fragment->SetRelativeScale3D(FVector(FragmentSize / 100.f));

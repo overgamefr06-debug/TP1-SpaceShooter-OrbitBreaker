@@ -1,73 +1,63 @@
-# TP1 — Space Shooter
+# Orbit Breaker — TP1 Space Shooter
 
-Deuxième jalon : projet C++ Unreal 5.8, vaisseau pilotable, tirs et astéroïdes destructibles avec réglages Blueprint.
+Prototype jouable réalisé avec Unreal Engine 5.8.3. Logique de jeu en C++, paramètres et références des assets dans les Blueprints. Troisième jalon : boucle de partie et direction artistique.
 
-Ouvrir `SpaceShooter.uproject`, puis la carte `Content/Maps/L_Arena`. Lancer Play et cliquer dans la vue. Déplacement : flèches, ZQSD ou WASD. Espace ou clic gauche tire (maintenir pour tirer en continu). R recommence la carte. Échap arrête le test dans l'éditeur.
+## Ouvrir et jouer
 
-## Répartition
+Ouvrir `SpaceShooter.uproject`, charger `Content/Maps/L_Arena` et lancer Play. Dans le menu, cliquer **Lancer la mission** ou appuyer sur **Entrée**.
 
-- `AShipPawn` : composants, entrées Enhanced Input, déplacement dans le plan et limites de l'arène.
-- `BP_Ship` : enfant du vaisseau C++, apparence et vitesse réglables.
-- `ASpaceGameMode` : caméra et démarrage du premier prototype.
-- `BP_SpaceGameMode` : choix du Blueprint du joueur.
-- `AShotProjectile` / `BP_Projectile` : déplacement balayé, impact unique et durée de vie.
-- `ASpaceAsteroid` / `BP_Asteroid` : résistance tirée au hasard à la création, dégâts et destruction.
-- `ACombatBurst` / `BP_MuzzleFlash`, `BP_AsteroidBurst` : effets temporaires, couleurs et dimensions réglables.
+- Flèches, ZQSD ou WASD : déplacement dans les quatre directions.
+- Espace ou clic gauche, maintenu : tir avec cadence limitée.
+- R : recommencer une partie en cours ou terminée.
+- Échap : retour au menu dans le build; dans Play in Editor, le raccourci d'Unreal arrête généralement le test.
+- Quitter : bouton du menu principal. Depuis la fin de partie, Retour au menu permet de le retrouver.
 
-Les formes simples sont temporaires. Trois astéroïdes fixes forment une carte de test. Les apparitions aléatoires, la poussée initiale, les collisions avec perte de vies, le score et le menu restent à développer.
+Exécutable autonome : `Build/Windows/SpaceShooter.exe`. Le dossier Windows complet est nécessaire; ne pas déplacer uniquement le petit exécutable de lancement.
 
-## Gestion de versions
+## Comportement
 
-Les exclusions sont préparées. Le dépôt local contient un premier commit sur main et la branche dev, avec l'identité Git choisie par Over. Le dépôt GitHub public reste à créer. Perforce est maintenant configuré sur le serveur UQAC avec les streams main et dev. Pour Perforce, activer `.p4ignore` dans le contexte du projet; conserver `Build/Windows` dans la remise Perforce.
+Les astéroïdes apparaissent sur l'un des quatre bords, à une position et après un délai aléatoires. Une impulsion physique initiale les dirige vers la position du joueur avec une dispersion; ils ne poursuivent pas ensuite le joueur. Les astéroïdes tournent, ont une taille variable et nécessitent de un à trois tirs, tirés au hasard une seule fois à leur création.
 
-Ne pas ajouter les notes de cours, transcriptions ou outils d'analyse au projet remis.
+La destruction par un projectile rapporte 100 points. Un contact retire une vie et consomme l'astéroïde. Une protection de 1,5 seconde évite de perdre plusieurs vies immédiatement; le vaisseau clignote pendant cette récupération. Une collision durant cette protection consomme aussi l'astéroïde, sans score. À zéro vie, les apparitions et le score s'arrêtent et le bilan propose de rejouer ou de revenir au menu.
 
+La difficulté augmente progressivement avec la vitesse des astéroïdes (plafond +50 % après trois minutes). Leur nombre est limité et ceux sortis de la zone sont supprimés. Le redémarrage nettoie astéroïdes, projectiles et effets puis réinitialise score, vies et durée.
 
-## Validation du premier jalon — 29 septembre 2026
+## Architecture et réglages
 
-- Compilation C++ Editor et Shipping réussie avec Unreal 5.8.3.
-- Test `SpaceShooter.Gameplay.ShipControls` réussi : dix touches, directions et limites de l’arène. Rapport local dans `Artifacts/Tests/index.json`.
-- Carte, caméra et vaisseau contrôlés sur une capture réelle du jeu, conservée dans `Artifacts/Apercu_jalon1.png`.
-- Build Windows complet : **363 785 234 octets**, soit **363,79 Mo**. Cette mesure concerne le premier prototype, pas la remise finale.
-- L’exécutable Shipping autonome a été lancé pendant au moins 45 secondes, puis son processus de test a été arrêté. Le test automatisé des touches a été exécuté dans l’éditeur, pas dans le build Shipping.
+| C++ | Blueprint | Responsabilité et valeurs utiles |
+|---|---|---|
+| ShipPawn | BP_Ship | Entrées, mouvement, limites, cadence, projectile, effets, meshes |
+| ShotProjectile | BP_Projectile | Mouvement balayé, impact unique, vitesse et durée de vie |
+| SpaceAsteroid | BP_Asteroid | Résistance, impulsion physique, rotation, variantes de mesh et tailles |
+| SpaceGameMode | BP_SpaceGameMode | Menu/partie/fin, score et vies; délais, vitesse, bord et plafond des apparitions |
+| CombatBurst | BP_MuzzleFlash / BP_AsteroidBurst | Fragments animés, durée, couleur et son |
+| SpaceHUD | BP_OrbitHUD | Interface Canvas, menu cliquable, textes, auteur, police et couleurs |
 
-Pour essayer sans l’éditeur, lancer `Build/Windows/SpaceShooter.exe`. Utiliser les flèches, ZQSD ou WASD; **Alt+F4** ferme cette première version. Il n’y a pas encore de menu.
+L'interface est dessinée en C++ avec une police vectorielle et une mise à l'échelle; son Blueprint expose les textes et la direction artistique. Ce n'est pas encore un écran composé dans le Designer UMG.
 
-Prochain jalon : apparitions aléatoires sur les bords et poussée initiale des astéroïdes. Configurer GitHub pour publier les branches Git. Continuer les changelists Perforce au fil du développement. Les conflits volontaires, captures et vidéo finale restent à réaliser.
+## Assets originaux
 
-Les versions d’Unreal et du compilateur ont été lues sur le PC; la configuration C++ a aussi été confrontée à la [documentation officielle Epic](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-your-development-environment-for-cplusplus-in-unreal-engine).
+`Content/Art/Meshes` contient le vaisseau K-07, ses deux jets et trois variantes d'astéroïdes rocheux à facettes. Les couleurs par sommet donnent une surface lisible sans éclairage coûteux. `Content/Art` contient aussi la nébuleuse, ses matériaux et les sons de laser/impact.
 
+Les meshes, la texture et les sons ont été créés pour ce projet, sans pack externe. Les sources PNG/WAV sont dans `ArtSources`; la génération est documentée dans `Tools/generate_atmosphere.py` et `Tools/create_orbit_art.py`. Les polices et primitives restantes proviennent d'Unreal. Les scripts de génération ne doivent être relancés qu'après checkout des assets concernés; ils appliquent les réglages de ce jalon.
 
-## Connexion Perforce — 29 septembre 2026
+Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
-- Serveur : `ssl:p4prod.uqac.ca:1666`; compte universitaire : `kortega`.
-- Dépôt attribué : `20263_8PRO135_KEVIN_ORTEGA`.
-- Stream principal : `//20263_8PRO135_KEVIN_ORTEGA/main`; premier envoi : changelist **5801**, 51 fichiers dont le build Windows complet.
-- Stream de développement : `//20263_8PRO135_KEVIN_ORTEGA/dev`, créé depuis main dans la changelist **5803**.
-- Workspace de travail : `kortega_tp1_dev_DESKTOP_6NT64UN`, racine `C:\Users\Over\Desktop\Tp1 Unreal\SpaceShooter`.
-- Workspace principal : `kortega_tp1_main_DESKTOP_6NT64UN`, racine `C:\Users\Over\Desktop\Tp1 Unreal\Perforce\main`.
+## Validation — 29 septembre 2026
 
-Continuer à ouvrir le projet dans **SpaceShooter**, qui correspond au stream **dev**. Les dossiers locaux des deux streams sont distincts. Les paramètres de connexion sont locaux, sans mot de passe enregistré dans le projet versionné.
+- Compilation Editor et packaging Shipping réussis.
+- Trois tests de gameplay réussis, sans avertissement : `Combat`, `ShipControls`, `RunLoop`. Rapport local : `Artifacts/TestsJalon3Final/index.json`.
+- Combat : touches de tir, cadence, impact unique, tir à bout portant, projectile rapide balayé, résistance et expiration.
+- Mouvement : dix touches, directions, contrainte du plan et limites.
+- Partie : écran initial, apparitions temporisées, positions sur les bords, déplacement après impulsion, score, collisions physiques, protection temporaire, dernière vie, arrêt du score, redémarrage et retour au menu.
+- Menu et assets inspectés visuellement dans le jeu Development; lancement depuis le bouton et fin de partie observés. La révision de police a ensuite été inspectée visuellement.
+- Build Windows autonome lancé et menu affiché. Le test automatisé des commandes a été effectué dans l'éditeur; ne pas le confondre avec un test manuel exhaustif du build.
+- Taille du build complet : **364 531 345 octets**, soit **364,53 Mo**, sous la limite de 500 Mo. Cette version reste un jalon de développement, pas la remise finale.
 
-Avant une modification, ouvrir les fichiers pour édition (Check Out). Dans P4V, contrôler les fichiers de la changelist avant Submit. Les assets `.uasset` et `.umap` sont de type `binary+l` pour leur ouverture exclusive. Les fichiers non ouverts sont en lecture seule; ne pas utiliser Make Writable pour remplacer le checkout.
+## Gestion de versions et travail restant
 
-Les exclusions des caches sont ancrées à la racine : les dossiers Binaries nécessaires **à l’intérieur du build Windows** restent versionnés. `.git`, `.p4config`, caches, rapports de tests et journaux intermédiaires de packaging sont exclus.
+Le dossier de travail `SpaceShooter` correspond au stream Perforce `//20263_8PRO135_KEVIN_ORTEGA/dev`, workspace `kortega_tp1_dev_DESKTOP_6NT64UN`. Le serveur est `ssl:p4prod.uqac.ca:1666`, utilisateur `kortega`. Avant de modifier un fichier suivi, faire Check Out; les assets utilisent le type exclusif `binary+l`. Les caches, rapports et paramètres de connexion restent exclus. Le dossier `Build/Windows` est versionné dans Perforce et ignoré dans Git.
 
-Les branches Git et les streams Perforce sont deux historiques distincts. Ne pas changer de branche Git au milieu de modifications Perforce sans contrôler les changements locaux. Le conflit demandé par le TP reste à réaliser séparément dans chaque outil.
+Les branches Git locales `main` et `dev` existent. Git et Perforce ont des historiques distincts. Ne pas changer de branche Git au milieu de modifications Perforce. Le premier envoi Perforce est 5801 sur main, le peuplement de dev 5803, et le jalon tir/destruction 5847 sur dev.
 
-
-## Validation du deuxième jalon — 29 septembre 2026
-
-- Deux tests Unreal réussis : déplacement et combat. Un contrôle supplémentaire du tir à bout portant a aussi réussi.
-- Le test de combat déclenche Espace et clic gauche, vérifie la cadence, la consommation du projectile, les dégâts uniques, la destruction au dernier impact et la disparition des projectiles manqués.
-- Un projectile à 30 000 unités/s touche un seul des deux astéroïdes superposés : le balayage détecte la cible sans doubler les dégâts.
-- La résistance reste dans les bornes Blueprint et diminue à chaque tir; elle n’est pas retirée au hasard après l’impact. Les bornes invalides sont ramenées à une résistance d’au moins un.
-- Le rendu du projectile et la destruction ont été contrôlés dans le prototype Development et dans le build Windows Shipping autonome; R remet les trois cibles en place dans les deux versions.
-- Build Windows Shipping généré avec succès : **364 269 386 octets**, soit **364,27 Mo** avant fichiers éventuellement créés par son exécution.
-- Rapports locaux : `Artifacts/TestsJalon2/index.json` et `Artifacts/TestsJalon2Edge/index.json`.
-
-### Où régler les valeurs
-
-Dans `BP_Ship` : catégorie **Ship > Weapon**, classe du projectile, intervalle de tir et effet au départ du tir. Dans `BP_Projectile` : vitesse et durée de vie. Dans `BP_Asteroid` : **Minimum Hits**, **Maximum Hits** et effet de destruction. Les fonctions de comportement restent dans les classes C++.
-
-Ce jalon couvre la boucle tir–impact–destruction. Les cibles sont volontairement immobiles pour la tester; ce n’est pas encore le comportement final du TP.
+Avant la remise : créer/publier le dépôt GitHub public, réaliser et documenter les conflits volontaires Git et Perforce, intégrer la version finale sur main, enregistrer `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`, puis refaire un contrôle final du build. Ces éléments ne sont pas encore réalisés. Les notes et transcriptions des cours restent hors du projet remis.

@@ -21,6 +21,7 @@ public:
     float FragmentSize = 8.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
     TObjectPtr<UMaterialInterface> Material;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<USoundBase> Sound;
 protected:
     virtual void BeginPlay() override;
 private:

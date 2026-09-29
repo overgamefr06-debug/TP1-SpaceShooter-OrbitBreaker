@@ -3,6 +3,7 @@
 #include "Tests/AutomationCommon.h"
 #include "Tests/AutomationEditorCommon.h"
 #include "../ShipPawn.h"
+#include "../SpaceGameMode.h"
 #include "Editor.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -24,6 +25,12 @@ public:
             return true;
         }
         if (Index >= UE_ARRAY_COUNT(Cases)) return true;
+        if (!bStarted)
+        {
+            auto* Mode=World->GetAuthGameMode<ASpaceGameMode>();
+            Mode->StartRun(); Mode->bSpawningEnabled=false;
+            bStarted=true;
+        }
         const FCase& Case = Cases[Index];
         if (!bPressed)
         {
@@ -66,6 +73,7 @@ private:
     int32 Index = 0;
     float StartTime = 0.f;
     bool bPressed = false;
+    bool bStarted = false;
 };
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FShipMovementTest, "SpaceShooter.Gameplay.ShipControls",

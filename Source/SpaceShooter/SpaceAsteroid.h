@@ -13,6 +13,9 @@ class SPACESHOOTER_API ASpaceAsteroid : public AActor
     GENERATED_BODY()
 public:
     ASpaceAsteroid();
+    virtual void Tick(float DeltaSeconds) override;
+    UFUNCTION(BlueprintCallable, Category="Asteroid|Movement") void Launch(FVector Velocity);
+    bool CausesContactDamage() const { return bMoving; }
     UFUNCTION(BlueprintCallable, Category="Asteroid")
     void ReceiveShot();
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Asteroid")
@@ -27,8 +30,13 @@ public:
     int32 RemainingHits = 0;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Effects")
     TSubclassOf<ACombatBurst> DestructionEffectClass;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") TArray<TObjectPtr<UStaticMesh>> MeshVariants;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") float MinimumScale = .65f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") float MaximumScale = 1.05f;
 protected:
     virtual void BeginPlay() override;
 private:
     bool bDestroyedByShot = false;
+    bool bMoving = false;
+    float Spin = 0;
 };

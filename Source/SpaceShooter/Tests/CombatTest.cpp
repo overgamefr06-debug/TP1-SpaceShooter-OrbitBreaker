@@ -6,6 +6,7 @@
 #include "../ShotProjectile.h"
 #include "../SpaceAsteroid.h"
 #include "../CombatBurst.h"
+#include "../SpaceGameMode.h"
 #include "Editor.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -42,6 +43,8 @@ public:
         switch (Step++)
         {
         case 0:
+            World->GetAuthGameMode<ASpaceGameMode>()->StartRun();
+            World->GetAuthGameMode<ASpaceGameMode>()->bSpawningEnabled=false;
             for (TActorIterator<ASpaceAsteroid> It(World); It; ++It) It->Destroy();
             Ship->SetActorLocation(FVector::ZeroVector);
             Rock = Target(FVector(350,0,0),2,2);
