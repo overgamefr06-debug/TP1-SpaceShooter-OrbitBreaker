@@ -1,0 +1,13 @@
+/Binaries/
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+/.vs/
+/.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+/Build/Windows/
+/Artifacts/
