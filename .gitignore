@@ -11,3 +11,5 @@
 *.VC.db
 /Build/Windows/
 /Artifacts/
+
+/.p4config
