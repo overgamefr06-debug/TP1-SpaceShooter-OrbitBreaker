@@ -9,6 +9,8 @@ class UStaticMeshComponent;
 class UFloatingPawnMovement;
 class UInputAction;
 class UInputMappingContext;
+class AShotProjectile;
+class ACombatBurst;
 
 UCLASS()
 class SPACESHOOTER_API AShipPawn : public APawn
@@ -33,12 +35,28 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Movement")
     FVector2D ArenaHalfSize = FVector2D(500.f, 900.f);
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Weapon")
+    TSubclassOf<AShotProjectile> ProjectileClass;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Weapon")
+    TSubclassOf<ACombatBurst> MuzzleEffectClass;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Weapon", meta=(ClampMin="0.05"))
+    float FireInterval = .22f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Weapon", meta=(ClampMin="50"))
+    float MuzzleOffset = 65.f;
+
+    UFUNCTION(BlueprintCallable, Category="Ship|Weapon")
+    void TryFire();
+
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
     void Move(const FInputActionValue& Value);
+    void RestartArena();
+    double LastShotTime = -1.e10;
     UPROPERTY() TObjectPtr<UInputAction> MoveAction;
+    UPROPERTY() TObjectPtr<UInputAction> FireAction;
+    UPROPERTY() TObjectPtr<UInputAction> RestartAction;
     UPROPERTY() TObjectPtr<UInputMappingContext> MappingContext;
 };

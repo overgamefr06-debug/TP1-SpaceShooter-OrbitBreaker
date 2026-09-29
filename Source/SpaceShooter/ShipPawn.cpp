@@ -1,4 +1,7 @@
 #include "ShipPawn.h"
+#include "ShotProjectile.h"
+#include "CombatBurst.h"
+#include "Engine/World.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
@@ -40,6 +43,11 @@ AShipPawn::AShipPawn()
     Movement->Deceleration = 8000.f;
     MoveAction = CreateDefaultSubobject<UInputAction>(TEXT("MoveAction"));
     MoveAction->ValueType = EInputActionValueType::Axis2D;
+    FireAction = CreateDefaultSubobject<UInputAction>(TEXT("FireAction"));
+    FireAction->ValueType = EInputActionValueType::Boolean;
+    RestartAction = CreateDefaultSubobject<UInputAction>(TEXT("RestartAction"));
+    RestartAction->ValueType = EInputActionValueType::Boolean;
+    ProjectileClass = AShotProjectile::StaticClass();
 }
 
 void AShipPawn::BeginPlay()
@@ -66,6 +74,9 @@ void AShipPawn::BeginPlay()
     Bind(EKeys::A, false, true); Bind(EKeys::Q, false, true); Bind(EKeys::Left, false, true);
     Bind(EKeys::W, true, false); Bind(EKeys::Z, true, false); Bind(EKeys::Up, true, false);
     Bind(EKeys::S, true, true); Bind(EKeys::Down, true, true);
+    MappingContext->MapKey(FireAction, EKeys::SpaceBar);
+    MappingContext->MapKey(FireAction, EKeys::LeftMouseButton);
+    MappingContext->MapKey(RestartAction, EKeys::R);
     Input->AddMappingContext(MappingContext, 0);
 }
 
@@ -82,7 +93,34 @@ void AShipPawn::SetupPlayerInputComponent(UInputComponent* Input)
 {
     Super::SetupPlayerInputComponent(Input);
     if (auto* Enhanced = Cast<UEnhancedInputComponent>(Input))
+    {
         Enhanced->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShipPawn::Move);
+        Enhanced->BindAction(FireAction, ETriggerEvent::Triggered, this, &AShipPawn::TryFire);
+        Enhanced->BindAction(RestartAction, ETriggerEvent::Started, this, &AShipPawn::RestartArena);
+    }
+}
+
+void AShipPawn::TryFire()
+{
+    if (!ProjectileClass || !GetWorld()) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now - LastShotTime < FMath::Max(.05f, FireInterval)) return;
+    FActorSpawnParameters Params;
+    Params.Owner = this;
+    Params.Instigator = this;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    const FVector Position = GetActorLocation() + FVector(FMath::Max(50.f, MuzzleOffset), 0.f, 0.f);
+    if (GetWorld()->SpawnActor<AShotProjectile>(ProjectileClass, Position, FRotator::ZeroRotator, Params))
+    {
+        LastShotTime = Now;
+        if (MuzzleEffectClass)
+            GetWorld()->SpawnActor<ACombatBurst>(MuzzleEffectClass, Position, FRotator::ZeroRotator);
+    }
+}
+
+void AShipPawn::RestartArena()
+{
+    if (APlayerController* PC = Cast<APlayerController>(GetController())) PC->RestartLevel();
 }
 
 void AShipPawn::Move(const FInputActionValue& Value)

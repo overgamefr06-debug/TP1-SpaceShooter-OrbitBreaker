@@ -1,8 +1,8 @@
 # TP1 — Space Shooter
 
-Premier jalon : projet C++ Unreal 5.8, vaisseau pilotable et réglages Blueprint.
+Deuxième jalon : projet C++ Unreal 5.8, vaisseau pilotable, tirs et astéroïdes destructibles avec réglages Blueprint.
 
-Ouvrir `SpaceShooter.uproject`, puis la carte `Content/Maps/L_Arena`. Lancer Play et cliquer dans la vue. Déplacement : flèches, ZQSD ou WASD. Échap arrête le test dans l'éditeur.
+Ouvrir `SpaceShooter.uproject`, puis la carte `Content/Maps/L_Arena`. Lancer Play et cliquer dans la vue. Déplacement : flèches, ZQSD ou WASD. Espace ou clic gauche tire (maintenir pour tirer en continu). R recommence la carte. Échap arrête le test dans l'éditeur.
 
 ## Répartition
 
@@ -10,8 +10,11 @@ Ouvrir `SpaceShooter.uproject`, puis la carte `Content/Maps/L_Arena`. Lancer Pla
 - `BP_Ship` : enfant du vaisseau C++, apparence et vitesse réglables.
 - `ASpaceGameMode` : caméra et démarrage du premier prototype.
 - `BP_SpaceGameMode` : choix du Blueprint du joueur.
+- `AShotProjectile` / `BP_Projectile` : déplacement balayé, impact unique et durée de vie.
+- `ASpaceAsteroid` / `BP_Asteroid` : résistance tirée au hasard à la création, dégâts et destruction.
+- `ACombatBurst` / `BP_MuzzleFlash`, `BP_AsteroidBurst` : effets temporaires, couleurs et dimensions réglables.
 
-Les formes simples sont temporaires. Le tir, les astéroïdes, les vies, le score, le menu et les effets viendront après validation de ce jalon.
+Les formes simples sont temporaires. Trois astéroïdes fixes forment une carte de test. Les apparitions aléatoires, la poussée initiale, les collisions avec perte de vies, le score et le menu restent à développer.
 
 ## Gestion de versions
 
@@ -30,7 +33,7 @@ Ne pas ajouter les notes de cours, transcriptions ou outils d'analyse au projet 
 
 Pour essayer sans l’éditeur, lancer `Build/Windows/SpaceShooter.exe`. Utiliser les flèches, ZQSD ou WASD; **Alt+F4** ferme cette première version. Il n’y a pas encore de menu.
 
-Prochain jalon : tir, projectile et premier astéroïde destructible. Configurer GitHub pour publier les branches Git. Continuer les changelists Perforce au fil du développement. Les conflits volontaires, captures et vidéo finale restent à réaliser.
+Prochain jalon : apparitions aléatoires sur les bords et poussée initiale des astéroïdes. Configurer GitHub pour publier les branches Git. Continuer les changelists Perforce au fil du développement. Les conflits volontaires, captures et vidéo finale restent à réaliser.
 
 Les versions d’Unreal et du compilateur ont été lues sur le PC; la configuration C++ a aussi été confrontée à la [documentation officielle Epic](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-your-development-environment-for-cplusplus-in-unreal-engine).
 
@@ -51,3 +54,20 @@ Avant une modification, ouvrir les fichiers pour édition (Check Out). Dans P4V,
 Les exclusions des caches sont ancrées à la racine : les dossiers Binaries nécessaires **à l’intérieur du build Windows** restent versionnés. `.git`, `.p4config`, caches, rapports de tests et journaux intermédiaires de packaging sont exclus.
 
 Les branches Git et les streams Perforce sont deux historiques distincts. Ne pas changer de branche Git au milieu de modifications Perforce sans contrôler les changements locaux. Le conflit demandé par le TP reste à réaliser séparément dans chaque outil.
+
+
+## Validation du deuxième jalon — 29 septembre 2026
+
+- Deux tests Unreal réussis : déplacement et combat. Un contrôle supplémentaire du tir à bout portant a aussi réussi.
+- Le test de combat déclenche Espace et clic gauche, vérifie la cadence, la consommation du projectile, les dégâts uniques, la destruction au dernier impact et la disparition des projectiles manqués.
+- Un projectile à 30 000 unités/s touche un seul des deux astéroïdes superposés : le balayage détecte la cible sans doubler les dégâts.
+- La résistance reste dans les bornes Blueprint et diminue à chaque tir; elle n’est pas retirée au hasard après l’impact. Les bornes invalides sont ramenées à une résistance d’au moins un.
+- Le rendu du projectile et la destruction ont été contrôlés dans le prototype Development et dans le build Windows Shipping autonome; R remet les trois cibles en place dans les deux versions.
+- Build Windows Shipping généré avec succès : **364 269 386 octets**, soit **364,27 Mo** avant fichiers éventuellement créés par son exécution.
+- Rapports locaux : `Artifacts/TestsJalon2/index.json` et `Artifacts/TestsJalon2Edge/index.json`.
+
+### Où régler les valeurs
+
+Dans `BP_Ship` : catégorie **Ship > Weapon**, classe du projectile, intervalle de tir et effet au départ du tir. Dans `BP_Projectile` : vitesse et durée de vie. Dans `BP_Asteroid` : **Minimum Hits**, **Maximum Hits** et effet de destruction. Les fonctions de comportement restent dans les classes C++.
+
+Ce jalon couvre la boucle tir–impact–destruction. Les cibles sont volontairement immobiles pour la tester; ce n’est pas encore le comportement final du TP.
