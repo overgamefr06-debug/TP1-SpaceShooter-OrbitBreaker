@@ -51,7 +51,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Mouvement : dix touches, directions, contrainte du plan et limites.
 - Partie : écran initial, apparitions temporisées, positions sur les bords, déplacement après impulsion, score, collisions physiques, protection temporaire, dernière vie, arrêt du score, redémarrage et retour au menu.
 - Menu et assets inspectés visuellement dans le jeu Development; lancement depuis le bouton et fin de partie observés. La révision de police a ensuite été inspectée visuellement.
-- Build Windows autonome lancé et menu affiché. Le test automatisé des commandes a été effectué dans l'éditeur; ne pas le confondre avec un test manuel exhaustif du build.
+- Build Windows Shipping final lancé depuis le workspace main : menu, démarrage par Entrée, apparitions et fin de partie, redémarrage par R, projectile à l'écran, retour au menu par Échap et bouton Quitter vérifiés. Les tests complets de mouvement et de collisions restent ceux exécutés dans l'éditeur.
 - Taille du build complet : **363 202 611 octets**, soit **363,20 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La remise reste incomplète tant que GitHub et sa capture ne sont pas publiés.
 
 ## Gestion de versions et travail restant
@@ -60,7 +60,7 @@ Le dossier de travail `SpaceShooter` correspond au stream Perforce `//20263_8PRO
 
 Les branches Git locales `main` et `dev` existent. Git et Perforce ont des historiques distincts. Ne pas changer de branche Git au milieu de modifications Perforce. Le premier envoi Perforce est 5801 sur main, le peuplement de dev 5803, et le jalon tir/destruction 5847 sur dev.
 
-Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Docs/Conflits_revision_control.md`, avec les sorties brutes des deux outils. Le commit de fusion Git conserve ses deux parents; Perforce contient les changements 5901 à 5905. Le jeu et le build ont été intégrés sur main dans Perforce (5902).
+Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Docs/Conflits_revision_control.md`, avec les sorties brutes des deux outils. Le commit de fusion Git conserve ses deux parents; Perforce contient les changements 5901 à 5905. Le jeu et le build ont été intégrés sur main dans Perforce (5902), puis le build reconstruit et les preuves de remise dans 5913. Les branches Git locales main et dev contiennent aussi la version jouable et les preuves.
 
 `Files/PerforceCommits.png` est une capture réelle de P4V montrant les changements main/dev et la résolution.
 
