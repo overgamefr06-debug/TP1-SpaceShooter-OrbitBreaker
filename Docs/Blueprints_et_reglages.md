@@ -31,7 +31,7 @@ Les fonctions de jeu marquées `BlueprintCallable` et les valeurs `BlueprintRead
 
 ## Sources et reconstruction
 
-Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py` et `Tools/generate_laser_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, `Tools/import_effects_content.py` et **en dernier `Tools/import_combat_polish.py`**. Faire Check Out sur les assets existants avant de relancer un import.
+Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py` et `Tools/generate_laser_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, `Tools/import_effects_content.py` et `Tools/import_combat_polish.py` puis **en dernier `Tools/import_soundtrack.py`**. Faire Check Out sur les assets existants avant de relancer un import.
 
 Chaque `BP_Bonus…` expose Aura Mesh, Aura Material et Collect Effect Class. Le matériau anime trois petites particules autour du symbole ; le composant Visual flotte doucement. Le bouclier de `BP_Ship` utilise `M_EnergyShield` : bord électrique, cellules hexagonales discrètes et centre transparent. `Strength` pilote son apparition et sa disparition ; `Impact` produit une impulsion lors du contact avec un astéroïde. Ces paramètres changent l’apparence, pas la durée de protection de dix secondes.
 
@@ -40,3 +40,9 @@ Les validations automatiques se lancent avec `-OrbitTestMode` pour protéger la 
 Le test `SpaceShooter.Visual.Effects` compare les pixels de chaque vaisseau au repos et pendant une série de tirs. Il échoue si plus de 5 % de ses pixels lumineux deviennent noirs et conserve les captures dans `Saved/EffectsValidation`.
 
 Le test `SpaceShooter.Visual.AsteroidEffects` détruit un astéroïde près d’un autre, puis vérifie aussi l’effet de collision avec le vaisseau. Il exige que 99 % des pixels lumineux du rocher survivant restent visibles. Les astéroïdes utilisent désormais l’alpha complet de leur texture ; projectiles, poussière et étincelles sont additifs, sans fragment opaque. Le logo flotte de ±4 pixels, s’incline de moins d’un demi-degré et varie de moins de 1 % en taille ; ces animations sont dans `SpaceHUD::DrawHUD`.
+
+## Musiques et sons des boutons
+
+Dans `BP_SpaceGameMode`, catégorie **Audio**, les références Menu Music / Game Music choisissent les deux musiques. Interface Sounds contient, dans cet ordre, survol, sélection, validation et retour. Menu Music Volume = 0,55 ; Game Music Volume = 0,38 ; Interface Volume = 0,50. Les sources WAV sont dans ArtSources/Soundtrack ; générateur original `Tools/generate_soundtrack.py`, import `Tools/import_soundtrack.py`.
+
+`SpaceGameMode::UpdateMusic` assure les fondus, avec deux lecteurs réutilisés. Les événements de jeu et de clavier appellent les confirmations ; `SpaceHUD::NotifyHitBoxBeginCursorOver` joue un survol à l’entrée du curseur, pas à chaque dessin du HUD. Le bouton Quitter attend 180 ms pour laisser entendre son son. `SpaceShooter.Audio.Transitions` vérifie les pistes bouclées, les boutons non bouclés et les changements d’état rapides.

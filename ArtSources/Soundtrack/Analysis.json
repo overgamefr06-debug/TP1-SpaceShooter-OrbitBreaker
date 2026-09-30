@@ -1,0 +1,38 @@
+{
+  "M_QuietOrbit": {
+    "seconds": 45.714,
+    "peak_dbfs": -2.85,
+    "rms_dbfs": -16.22,
+    "seam_step": 0.034528985683798086
+  },
+  "M_BreakerRun": {
+    "seconds": 64.0,
+    "peak_dbfs": -2.85,
+    "rms_dbfs": -16.75,
+    "seam_step": 0.005890820204678546
+  },
+  "UI_Hover": {
+    "seconds": 0.065,
+    "peak_dbfs": -6.94,
+    "rms_dbfs": -11.98,
+    "seam_step": 0.0
+  },
+  "UI_Select": {
+    "seconds": 0.13,
+    "peak_dbfs": -4.44,
+    "rms_dbfs": -11.95,
+    "seam_step": 0.0
+  },
+  "UI_Confirm": {
+    "seconds": 0.24,
+    "peak_dbfs": -4.44,
+    "rms_dbfs": -14.37,
+    "seam_step": 0.0
+  },
+  "UI_Back": {
+    "seconds": 0.16,
+    "peak_dbfs": -4.44,
+    "rms_dbfs": -12.31,
+    "seam_step": 0.0
+  }
+}

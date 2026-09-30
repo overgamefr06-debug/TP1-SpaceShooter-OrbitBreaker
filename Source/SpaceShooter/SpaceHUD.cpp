@@ -176,6 +176,13 @@ void ASpaceHUD::NotifyHitBoxClick(FName BoxName)
     if (!Mode || Mode->IsPlaying()) return;
     if (BoxName==TEXT("Start")) Mode->StartRun();
     else if(BoxName==TEXT("Menu")) Mode->ReturnToMenu();
-    else if(BoxName==TEXT("Quit")) UKismetSystemLibrary::QuitGame(this,GetOwningPlayerController(),EQuitPreference::Quit,false);
+    else if(BoxName==TEXT("Quit")) Mode->RequestQuit();
     else for(int32 i=0;i<3;++i) if(BoxName==FName(*FString::Printf(TEXT("Ship%d"),i))) Mode->SelectShip(i);
+}
+
+void ASpaceHUD::NotifyHitBoxBeginCursorOver(FName BoxName)
+{
+    Super::NotifyHitBoxBeginCursorOver(BoxName);
+    if (auto* Mode=GetWorld()->GetAuthGameMode<ASpaceGameMode>(); Mode && !Mode->IsPlaying())
+        Mode->PlayUICue(EOrbitUICue::Hover);
 }

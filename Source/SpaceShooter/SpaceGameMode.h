@@ -5,6 +5,10 @@
 #include "SpaceGameMode.generated.h"
 
 class ASpaceAsteroid;
+class UAudioComponent;
+class USoundBase;
+UENUM(BlueprintType)
+enum class EOrbitUICue : uint8 { Hover, Select, Confirm, Back };
 UENUM(BlueprintType)
 enum class ESpaceRunState : uint8 { Menu, Playing, GameOver };
 
@@ -14,6 +18,17 @@ class SPACESHOOTER_API ASpaceGameMode : public AGameModeBase
     GENERATED_BODY()
 public:
     ASpaceGameMode();
+    UFUNCTION(BlueprintCallable, Category="Audio") void PlayUICue(EOrbitUICue Cue);
+    UFUNCTION(BlueprintCallable, Category="Interface") void RequestQuit();
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Audio") TObjectPtr<UAudioComponent> MenuPlayer;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Audio") TObjectPtr<UAudioComponent> GamePlayer;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio") TObjectPtr<USoundBase> MenuMusic;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio") TObjectPtr<USoundBase> GameMusic;
+    // Ordered like EOrbitUICue: hover, select, confirm, back.
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio") TArray<TObjectPtr<USoundBase>> InterfaceSounds;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio", meta=(ClampMin="0",ClampMax="1")) float MenuMusicVolume = .55f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio", meta=(ClampMin="0",ClampMax="1")) float GameMusicVolume = .38f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Audio", meta=(ClampMin="0",ClampMax="1")) float InterfaceVolume = .5f;
     virtual void Tick(float DeltaSeconds) override;
     UFUNCTION(BlueprintCallable, Category="Run") void StartRun();
     UFUNCTION(BlueprintCallable, Category="Run") void ReturnToMenu();
@@ -64,6 +79,10 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:
+    void UpdateMusic();
+    bool bMusicInitialized = false, bGameMusicActive = false, bQuitPending = false;
+    double LastHoverTime = -100.;
+    FTimerHandle QuitTimer;
     void ClearCombatActors();
     void SetMenuInput(bool bMenu);
     double ProtectedUntil = 0;

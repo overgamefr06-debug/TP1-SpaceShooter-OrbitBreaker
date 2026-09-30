@@ -12,6 +12,7 @@ public:
     ASpaceHUD();
     virtual void DrawHUD() override;
     virtual void NotifyHitBoxClick(FName BoxName) override;
+    virtual void NotifyHitBoxBeginCursorOver(FName BoxName) override;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface") FString GameTitle = TEXT("ORBIT BREAKER");
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface") TObjectPtr<UFont> TextFont;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface") FString Author = TEXT("Kevin Ortega");

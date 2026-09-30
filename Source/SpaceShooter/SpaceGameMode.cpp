@@ -15,6 +15,10 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
+#include "TimerManager.h"
 
 ASpaceGameMode::ASpaceGameMode()
 {
@@ -22,11 +26,24 @@ ASpaceGameMode::ASpaceGameMode()
     HUDClass = ASpaceHUD::StaticClass();
     PrimaryActorTick.bCanEverTick = true;
     AsteroidClass = ASpaceAsteroid::StaticClass();
+    MenuPlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("MenuMusicPlayer"));
+    GamePlayer = CreateDefaultSubobject<UAudioComponent>(TEXT("GameMusicPlayer"));
+    SetRootComponent(MenuPlayer);
+    GamePlayer->SetupAttachment(MenuPlayer);
+    for (auto* Player : {MenuPlayer.Get(), GamePlayer.Get()})
+    {
+        Player->bAutoActivate = false;
+        Player->bAutoDestroy = false;
+        Player->bIsUISound = true;
+        Player->bAllowSpatialization = false;
+    }
 }
 
 void ASpaceGameMode::BeginPlay()
 {
     Super::BeginPlay();
+    MenuPlayer->SetSound(MenuMusic);
+    GamePlayer->SetSound(GameMusic);
     // Automation never modifies the player's real progression save.
     if (FParse::Param(FCommandLine::Get(),TEXT("OrbitTestMode"))) bPersistProgress=false;
     LoadProgress();
@@ -75,6 +92,8 @@ void ASpaceGameMode::ClearCombatActors()
 
 void ASpaceGameMode::StartRun()
 {
+    if (bQuitPending) return;
+    PlayUICue(EOrbitUICue::Confirm);
     SaveProgress();
     ClearCombatActors();
     DoubleScoreUntil=ShieldUntil=TripleShotUntil=0;
@@ -86,6 +105,7 @@ void ASpaceGameMode::StartRun()
     SpawnCountdown = 1.2f;
     ProtectedUntil = GetWorld()->GetTimeSeconds() + FMath::Max(.1f, InvulnerabilitySeconds);
     State = ESpaceRunState::Playing;
+    UpdateMusic();
     if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0)))
     {
         Ship->ApplyShipStyle(SelectedShip);
@@ -99,8 +119,10 @@ void ASpaceGameMode::StartRun()
 
 void ASpaceGameMode::ReturnToMenu()
 {
+    if (State != ESpaceRunState::Menu) PlayUICue(EOrbitUICue::Back);
     SaveProgress();
     State = ESpaceRunState::Menu;
+    UpdateMusic();
     ClearCombatActors();
     if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0)))
     {
@@ -125,6 +147,7 @@ bool ASpaceGameMode::LoseLife()
     if (Lives == 0)
     {
         State = ESpaceRunState::GameOver;
+        UpdateMusic();
         SaveProgress();
         if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0)))
         {
@@ -153,9 +176,52 @@ void ASpaceGameMode::AwardAsteroid(int32 Points)
 
 void ASpaceGameMode::SelectShip(int32 Index)
 {
-    if (State != ESpaceRunState::Menu || !IsShipUnlocked(Index)) return;
+    if (bQuitPending || State != ESpaceRunState::Menu || !IsShipUnlocked(Index)) return;
+    PlayUICue(EOrbitUICue::Select);
     SelectedShip = Index;
     if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0))) Ship->ApplyShipStyle(Index);
+}
+
+void ASpaceGameMode::UpdateMusic()
+{
+    const bool bGame = IsPlaying();
+    // Restarting a run must not stack or restart the same loop.
+    if (bMusicInitialized && bGameMusicActive == bGame) return;
+    bMusicInitialized = true;
+    bGameMusicActive = bGame;
+    auto* Outgoing = bGame ? MenuPlayer.Get() : GamePlayer.Get();
+    auto* Incoming = bGame ? GamePlayer.Get() : MenuPlayer.Get();
+    if (Outgoing->IsPlaying()) Outgoing->FadeOut(.8f, 0.f);
+    if (Incoming->Sound) Incoming->FadeIn(1.f, bGame ? GameMusicVolume : MenuMusicVolume);
+}
+
+void ASpaceGameMode::PlayUICue(EOrbitUICue Cue)
+{
+    if (bQuitPending) return;
+    const double Now = GetWorld()->GetRealTimeSeconds();
+    if (Cue == EOrbitUICue::Hover)
+    {
+        if (Now - LastHoverTime < .08) return;
+        LastHoverTime = Now;
+    }
+    const int32 Index = static_cast<int32>(Cue);
+    if (InterfaceSounds.IsValidIndex(Index) && InterfaceSounds[Index])
+        UGameplayStatics::PlaySound2D(this, InterfaceSounds[Index], InterfaceVolume * (Cue == EOrbitUICue::Hover ? .5f : 1.f));
+}
+
+void ASpaceGameMode::RequestQuit()
+{
+    if (bQuitPending) return;
+    PlayUICue(EOrbitUICue::Back);
+    bQuitPending = true;
+    MenuPlayer->FadeOut(.15f, 0.f);
+    GamePlayer->FadeOut(.15f, 0.f);
+    // Let the click be heard before closing the application.
+    GetWorldTimerManager().SetTimer(QuitTimer, [this]()
+    {
+        UKismetSystemLibrary::QuitGame(this, GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+        bQuitPending = false;
+    }, .18f, false);
 }
 
 ASpaceAsteroid* ASpaceGameMode::SpawnAsteroid()
@@ -223,6 +289,8 @@ void ASpaceGameMode::LoadProgress()
 }
 void ASpaceGameMode::EndPlay(const EEndPlayReason::Type Reason)
 {
+    GetWorldTimerManager().ClearTimer(QuitTimer);
+    MenuPlayer->Stop(); GamePlayer->Stop();
     SaveProgress(); Super::EndPlay(Reason);
 }
 float ASpaceGameMode::BonusSeconds(ESpaceBonus Type) const

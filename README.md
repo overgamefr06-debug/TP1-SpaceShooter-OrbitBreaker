@@ -53,7 +53,7 @@ Les types peuvent se combiner. Reprendre un bonus renouvelle sa durée sans cumu
 | ShipPawn | BP_Ship | Entrées, mouvement, limites, cadence, projectile, effets et trois matériaux de vaisseau |
 | ShotProjectile | BP_Projectile | Mouvement balayé, impact unique, vitesse et durée de vie |
 | SpaceAsteroid | BP_Asteroid | Trois catégories : taille, résistance et points liés; impulsion physique, rotation, deux textures de roche et fragmentation |
-| SpaceGameMode | BP_SpaceGameMode | Menu/partie/fin, record sauvegardé, déblocages, bonus, score et vies; apparitions |
+| SpaceGameMode | BP_SpaceGameMode | Menu/partie/fin, record sauvegardé, déblocages, bonus, score et vies ; apparitions, musiques et sons des boutons |
 | CombatBurst | BP_MuzzleFlash / BP_AsteroidBurst / BP_RockCollision | Fragments animés, anneau de collision, durée, couleur et sons |
 | SpaceHUD | BP_OrbitHUD | Interface Canvas sobre, choix et verrouillage des vaisseaux, vies, HP et bonus actifs |
 | SpacePickup | BP_BonusDoubleScore / BP_BonusShield / BP_BonusRepair / BP_BonusTripleShot | Collecte unique, sprite, type, son et durée de présence |
@@ -80,14 +80,17 @@ Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débr
 
 Références de lisibilité étudiées : [Super Stardust HD](https://housemarque.com/games/sshd) et [Nova Drift](https://store.steampowered.com/app/858210/Nova_Drift/). Aucun asset de ces jeux n’a été copié.
 
-Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade, l’import des effets puis **`Tools/import_combat_polish.py` en dernier**, après `Tools/generate_laser_audio.py`. Les scripts précédents rétablissent l’apparence de leurs jalons.
+Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade, l’import des effets puis `Tools/import_combat_polish.py`, après `Tools/generate_laser_audio.py`, et enfin **`Tools/import_soundtrack.py`**, après `Tools/generate_soundtrack.py`. Les scripts précédents rétablissent l’apparence de leurs jalons.
+
+Deux musiques originales accompagnent le jeu : **Quiet Orbit**, ambiance spatiale calme de 45,7 s à 84 BPM, et **Breaker Run**, boucle électronique de 64 s à 120 BPM. Elles se fondent entre menu et partie ; le bilan retrouve la musique du menu. Rejouer en cours de partie ne coupe pas la boucle. Quatre sons courts accompagnent survol, choix du vaisseau, validation et retour, avec les mêmes confirmations au clavier. Sources, composition et réglages : [bande-son originale](ArtSources/Soundtrack/Composition.md).
 
 Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
 ## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Windows Shipping réussis.
-- Quatre tests de gameplay, deux tests visuels des effets et l’enregistrement de démonstration passent : **7 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/CombatPolishValidation/index.json`.
+- Quatre tests de gameplay, deux tests visuels, un test des transitions audio et l’enregistrement de démonstration passent : **8 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/SoundtrackFinal/index.json`.
+- Audio : deux SoundWave en boucle et quatre confirmations non bouclées ; passage menu/partie/bilan, relance et inversions rapides de fondu vérifiés, sans lecteur restant actif après sa sortie.
 - Combat : commandes de tir, cadence, impact unique, expiration, projectiles rapides, résistances 1/2/3 et scores 100/200/400.
 - Commandes et partie : déplacements, limites, apparitions aléatoires, impulsion physique, collisions, protection après dégâts, fin, redémarrage et retour au menu.
 - Nouveaux systèmes : collisions physiques de deux grands en trois moyens et de deux moyens en trois petits, catégories différentes exclues, aucun score de collision, grâce des fragments et effet créé.
@@ -95,7 +98,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Progression : seuils 4 999 / 5 000 et 14 999 / 15 000, refus du vaisseau verrouillé, record non cumulé entre parties, sauvegarde sur disque et rechargement dans un slot temporaire distinct de celui du joueur.
 - Menu et jeu inspectés sur les captures réelles : logo animé, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test du tir mesure au plus 0,2 % de pixels lumineux noircis sur les trois vaisseaux (seuil : 5 %). Pour les deux effets d’astéroïde vérifiés près d’un rocher survivant, la mesure est de 0,0 % (seuil : 1 %), contre jusqu’à 2,4 % avec les anciens fragments opaques.
 - Build Windows lancé et menu/partie vérifiés ; les vérifications complètes des mécaniques sont réalisées dans l’éditeur.
-- Build complet : **368918718 octets**, soit **368.92 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
+- Build complet : **371768603 octets**, soit **371,77 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
 
 ## Gestion de versions et remise
 
@@ -107,7 +110,7 @@ Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Doc
 
 `Files/PerforceCommits.png` est une capture réelle de P4V montrant les changements main/dev et la résolution.
 
-`Files/VideoDemoJeux.mp4` contient environ 59 secondes de capture réelle dans Unreal : menu verrouillé, Aegis, déplacements, tirs et nouvelles mécaniques. L’outil Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build, simule les commandes du joueur. Quatre collectes et une paire d’astéroïdes sont mises en scène pour montrer les ajouts ; les autres apparitions suivent les règles normales. Il n’accorde aucun déblocage à la vraie sauvegarde. Les images du viewport sont assemblées selon leurs horodatages. La vidéo est muette, la capture audio hors écran n’étant pas correctement synchronisée ; le jeu lui-même joue les sons de tir, collision et collecte. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
+`Files/VideoDemoJeux.mp4` contient environ 59 secondes de capture réelle dans Unreal : menu verrouillé, Aegis, déplacements, tirs et nouvelles mécaniques. L’outil Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build, simule les commandes du joueur. Quatre collectes et une paire d’astéroïdes sont mises en scène pour montrer les ajouts ; les autres apparitions suivent les règles normales. Il n’accorde aucun déblocage à la vraie sauvegarde. Les images du viewport sont assemblées selon leurs horodatages. La vidéo inclut le mix audio réel du jeu (musiques et effets), capturé sur le master submix Unreal, sans son du bureau ni microphone. La capture hors écran active temporairement l’audio de l’éditeur en arrière-plan (sans modifier les préférences enregistrées) pour éviter le silence lorsque la fenêtre n’a pas le focus. `Tools/assemble_demo.py` refuse un fichier audio silencieux, écrêté ou de durée incohérente avant assemblage. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
 
 Dépôt GitHub public : https://github.com/overgamefr06-debug/TP1-SpaceShooter-OrbitBreaker
 
@@ -116,3 +119,5 @@ Les branches `main` et `dev` sont publiées avec leur historique complet, dont l
 Les fichiers générés, les paramètres de connexion locaux, les notes et les transcriptions des cours restent hors du dépôt public. Le build est conservé dans Perforce et ignoré par Git. Les traces de tests locales restent dans `Artifacts`.
 
 Avant de remettre ou présenter le travail, rejouer une partie et relire `Docs/Conflits_revision_control.md` ainsi que les classes C++ pour pouvoir expliquer les choix techniques.
+
+Audit détaillé de chaque ligne du barème et étapes administratives restantes : [Docs/Audit_TP1.md](Docs/Audit_TP1.md). La date de remise du PDF et les éventuelles modalités Moodle restent à confirmer ; la présence des fichiers dans les dépôts ne prouve pas une remise administrative.
