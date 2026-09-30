@@ -20,7 +20,7 @@ Les astéroïdes apparaissent sur l'un des quatre bords, à une position et apr�
 
 La destruction par un projectile rapporte 100 points. Un contact retire une vie et consomme l'astéroïde. Une protection de 1,5 seconde évite de perdre plusieurs vies immédiatement; le vaisseau clignote pendant cette récupération. Une collision durant cette protection consomme aussi l'astéroïde, sans score. À zéro vie, les apparitions et le score s'arrêtent et le bilan propose de rejouer ou de revenir au menu.
 
-La difficulté augmente progressivement avec la vitesse des astéroïdes (plafond +50 % après trois minutes). Leur nombre est limité et ceux sortis de la zone sont supprimés. Le redémarrage nettoie astéroïdes, projectiles et effets puis réinitialise score, vies et durée.
+La difficulté augmente progressivement avec la vitesse des astéroïdes (plafond +50 % après 90 secondes). Leur nombre est limité et ceux sortis de la zone sont supprimés. Le redémarrage nettoie astéroïdes, projectiles et effets puis réinitialise score, vies et durée.
 
 ## Architecture et réglages
 
