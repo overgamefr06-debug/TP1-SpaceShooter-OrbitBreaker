@@ -21,7 +21,7 @@ AShipPawn::AShipPawn()
     PrimaryActorTick.bCanEverTick = true;
     Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
     SetRootComponent(Collision);
-    Collision->SetBoxExtent(FVector(38.f, 45.f, 18.f));
+    Collision->SetBoxExtent(FVector(27.f, 31.f, 18.f));
     Collision->SetCollisionProfileName(TEXT("Pawn"));
     Collision->SetGenerateOverlapEvents(true);
     Collision->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
@@ -38,6 +38,11 @@ AShipPawn::AShipPawn()
     EngineGlow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EngineGlow"));
     EngineGlow->SetupAttachment(Collision);
     EngineGlow->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ShieldGlow=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldGlow"));
+    ShieldGlow->SetupAttachment(Collision);
+    ShieldGlow->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ShieldGlow->SetCastShadow(false);
+    ShieldGlow->SetRelativeLocation(FVector(0,0,8));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Cone(TEXT("/Engine/BasicShapes/Cone.Cone"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
     Hull->SetStaticMesh(Cone.Object);
@@ -64,6 +69,8 @@ AShipPawn::AShipPawn()
 void AShipPawn::BeginPlay()
 {
     Super::BeginPlay();
+    ShieldGlow->SetStaticMesh(ShieldMesh);
+    if(ShieldMaterial) ShieldGlow->SetMaterial(0,ShieldMaterial);
     Collision->OnComponentBeginOverlap.AddDynamic(this, &AShipPawn::OnContact);
     Movement->MaxSpeed = FMath::Max(1.f, MoveSpeed);
     ApplyShipStyle(0);
@@ -135,11 +142,18 @@ void AShipPawn::TryFire()
     Params.Instigator = this;
     Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     const FVector Position = GetActorLocation() + FVector(FMath::Max(50.f, MuzzleOffset), 0.f, 0.f);
-    if (GetWorld()->SpawnActor<AShotProjectile>(ProjectileClass, Position, FRotator::ZeroRotator, Params))
+    auto* Mode=GetWorld()->GetAuthGameMode<ASpaceGameMode>();
+    const bool Triple=Mode && Mode->BonusSeconds(ESpaceBonus::TripleShot)>0;
+    bool Fired=false;
+    for(int32 i=Triple?-1:0;i<=(Triple?1:0);++i)
     {
-        LastShotTime = Now;
-        if (MuzzleEffectClass)
-            GetWorld()->SpawnActor<ACombatBurst>(MuzzleEffectClass, Position, FRotator::ZeroRotator);
+        const FVector Origin=Position+FVector(0,i*12.f,0);
+        if(GetWorld()->SpawnActor<AShotProjectile>(ProjectileClass,Origin,FRotator(0,i*12.f,0),Params)) Fired=true;
+    }
+    if(Fired)
+    {
+        LastShotTime=Now;
+        if(MuzzleEffectClass) GetWorld()->SpawnActor<ACombatBurst>(MuzzleEffectClass,Position,FRotator::ZeroRotator);
     }
 }
 
@@ -189,11 +203,13 @@ void AShipPawn::Tick(float DeltaSeconds)
             if (PC->WasInputKeyJustPressed(EKeys::Three) || PC->WasInputKeyJustPressed(EKeys::NumPadThree)) Mode->SelectShip(2);
         }
     }
-    const bool bBlink = Mode && Mode->IsPlaying() && Mode->IsInvulnerable() && FMath::Fmod(GetWorld()->GetTimeSeconds(), .16f) < .07f;
+    const bool bBlink = Mode && Mode->IsPlaying() && Mode->IsInvulnerable() && Mode->BonusSeconds(ESpaceBonus::Shield)<=0 && FMath::Fmod(GetWorld()->GetTimeSeconds(), .16f) < .07f;
     Hull->SetVisibility(!bBlink);
     Wings->SetVisibility(!bBlink);
     EngineGlow->SetVisibility(!bBlink);
-    EngineGlow->SetRelativeScale3D(FVector(.92f + .12f * FMath::Sin(GetWorld()->GetTimeSeconds() * 34.f),1,1));
+    ShieldGlow->SetVisibility(Mode && Mode->IsPlaying() && Mode->BonusSeconds(ESpaceBonus::Shield)>0);
+    ShieldGlow->SetRelativeScale3D(FVector(1.2f+.035f*FMath::Sin(GetWorld()->GetTimeSeconds()*3)));
+    EngineGlow->SetRelativeScale3D(FVector(.92f + .12f * FMath::Sin(GetWorld()->GetTimeSeconds() * 34.f),1,1)*.68f);
     const FVector Position = GetActorLocation();
     const FVector Clamped(FMath::Clamp(Position.X, -ArenaHalfSize.X, ArenaHalfSize.X),
         FMath::Clamp(Position.Y, -ArenaHalfSize.Y, ArenaHalfSize.Y), 0.f);

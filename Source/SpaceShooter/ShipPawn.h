@@ -28,6 +28,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
     TObjectPtr<UStaticMeshComponent> Wings;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components") TObjectPtr<UStaticMeshComponent> EngineGlow;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components") TObjectPtr<UStaticMeshComponent> ShieldGlow;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ship|Effects") TObjectPtr<UStaticMesh> ShieldMesh;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ship|Effects") TObjectPtr<UMaterialInterface> ShieldMaterial;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
     TObjectPtr<UFloatingPawnMovement> Movement;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Movement", meta=(ClampMin="1"))

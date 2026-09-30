@@ -31,7 +31,10 @@ public:
         switch(Step++)
         {
         case 0:
+            Mode->bPersistProgress=false;
             Test->TestTrue(TEXT("The initial screen is the menu"),Mode->State==ESpaceRunState::Menu);
+            Mode->BestScore=15000;
+            Mode->bBonusesEnabled=false;
             for(int32 Index=0;Index<3;++Index)
             {
                 Mode->SelectShip(Index);

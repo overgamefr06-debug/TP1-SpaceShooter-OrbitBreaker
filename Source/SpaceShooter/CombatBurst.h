@@ -22,9 +22,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
     TObjectPtr<UMaterialInterface> Material;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<USoundBase> Sound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UStaticMesh> FragmentMesh;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UStaticMesh> ShockwaveMesh;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UMaterialInterface> ShockwaveMaterial;
 protected:
     virtual void BeginPlay() override;
 private:
     UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Fragments;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Shockwave;
     float Age = 0.f;
 };

@@ -19,9 +19,10 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface") FLinearColor Warm = FLinearColor(1.f,.49f,.2f);
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TArray<TObjectPtr<UTexture2D>> ShipPortraits;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TObjectPtr<UTexture2D> ScoreEmblem;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TArray<TObjectPtr<UTexture2D>> BonusIcons;
 private:
     float Scale = 1, OffsetX = 0, OffsetY = 0;
-    void Label(const FString& Text, float X, float Y, float Size, FLinearColor Color);
+    void Label(const FString& Text, float X, float Y, float Size, FLinearColor Color, bool Center = false);
     void Panel(float X, float Y, float Width, float Height, FLinearColor Color);
     void Button(FName Name, const FString& Text, float X, float Y, bool bPrimary);
     void Sprite(UTexture2D* Texture,float X,float Y,float W,float H,FLinearColor Tint=FLinearColor::White);

@@ -33,6 +33,11 @@ public:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Asteroid|Size") int32 ScoreValue = 100;
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Asteroid|Resistance")
     int32 RemainingHits = 0;
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Asteroid|Resistance") int32 InitialHits = 1;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Collision") float FragmentGraceSeconds = .8f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") TArray<TObjectPtr<UMaterialInterface>> RockMaterials;
+    bool CanFragment() const;
+    void ConsumeForFragmentation();
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Effects")
     TSubclassOf<ACombatBurst> DestructionEffectClass;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") TArray<TObjectPtr<UStaticMesh>> MeshVariants;
@@ -42,4 +47,6 @@ private:
     bool bDestroyedByShot = false;
     bool bMoving = false;
     float Spin = 0;
+    double FragmentAfter = 0;
+    UFUNCTION() void OnRockOverlap(UPrimitiveComponent* Component,AActor* Other,UPrimitiveComponent* OtherComponent,int32 BodyIndex,bool bSweep,const FHitResult& Hit);
 };

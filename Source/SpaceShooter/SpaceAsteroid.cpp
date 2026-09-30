@@ -35,13 +35,17 @@ ASpaceAsteroid::ASpaceAsteroid()
 void ASpaceAsteroid::BeginPlay()
 {
     Super::BeginPlay();
+    Collision->OnComponentBeginOverlap.AddDynamic(this,&ASpaceAsteroid::OnRockOverlap);
+    FragmentAfter=GetWorld()->GetTimeSeconds()+FMath::Max(.1f,FragmentGraceSeconds);
     // Pick a category once: silhouette, resistance and reward stay linked.
     if (bRandomSize) SizeClass = static_cast<EAsteroidSize>(FMath::RandRange(0,2));
     const int32 Tier = FMath::Clamp(static_cast<int32>(SizeClass),0,2);
     RemainingHits = FMath::Max(1, HitsBySize[Tier]);
+    InitialHits=RemainingHits;
     ScoreValue = FMath::Max(0, PointsBySize[Tier]);
     SetActorScale3D(FVector(FMath::Max(.1, SizeScales[Tier])));
-    Spin = FMath::FRandRange(-38.f, 38.f);
+    Spin = FMath::FRandRange(-24.f, 24.f);
+    if(!RockMaterials.IsEmpty()) Mesh->SetMaterial(0,RockMaterials[FMath::RandHelper(RockMaterials.Num())]);
     if (!MeshVariants.IsEmpty())
     {
         Mesh->SetStaticMesh(MeshVariants[FMath::RandHelper(MeshVariants.Num())]);
@@ -82,4 +86,20 @@ void ASpaceAsteroid::ReceiveShot()
             GetWorld()->SpawnActor<ACombatBurst>(DestructionEffectClass, GetActorLocation(), FRotator::ZeroRotator);
         Destroy();
     }
+}
+
+bool ASpaceAsteroid::CanFragment() const
+{
+    return bMoving && !bDestroyedByShot && RemainingHits>0 && SizeClass!=EAsteroidSize::Small && GetWorld()->GetTimeSeconds()>=FragmentAfter;
+}
+void ASpaceAsteroid::ConsumeForFragmentation()
+{
+    bDestroyedByShot=true; RemainingHits=0; bMoving=false;
+    Collision->SetSimulatePhysics(false);
+    Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+void ASpaceAsteroid::OnRockOverlap(UPrimitiveComponent*,AActor* Other,UPrimitiveComponent*,int32,bool,const FHitResult&)
+{
+    if(auto* Rock=Cast<ASpaceAsteroid>(Other))
+        if(auto* Mode=GetWorld()->GetAuthGameMode<ASpaceGameMode>()) Mode->SplitAsteroidPair(this,Rock);
 }

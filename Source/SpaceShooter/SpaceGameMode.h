@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "SpacePickup.h"
 #include "SpaceGameMode.generated.h"
 
 class ASpaceAsteroid;
@@ -20,6 +21,28 @@ public:
     UFUNCTION(BlueprintCallable, Category="Run") void AwardAsteroid(int32 Points = 100);
     UFUNCTION(BlueprintCallable, Category="Fleet") void SelectShip(int32 Index);
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Fleet") int32 SelectedShip = 0;
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Fleet") int32 BestScore = 0;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Fleet") FIntVector UnlockScores = FIntVector(0,5000,15000);
+    UFUNCTION(BlueprintPure, Category="Fleet") bool IsShipUnlocked(int32 Index) const;
+    void SaveProgress();
+    void LoadProgress();
+    FString ProgressSlot = TEXT("OrbitBreakerProgress_v1");
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Fleet") bool bPersistProgress = true;
+    UFUNCTION(BlueprintCallable, Category="Bonus") void ActivateBonus(ESpaceBonus Type);
+    UFUNCTION(BlueprintPure, Category="Bonus") float BonusSeconds(ESpaceBonus Type) const;
+    UFUNCTION(BlueprintCallable, Category="Bonus") ASpacePickup* SpawnBonus();
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") TArray<TSubclassOf<ASpacePickup>> PickupClasses;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") float DoubleScoreDuration = 15.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") float ShieldDuration = 10.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") float TripleShotDuration = 15.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") float MinimumBonusDelay = 12.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus") float MaximumBonusDelay = 18.f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Bonus",meta=(ClampMin="0",ClampMax="1")) float RepairProbability = .05f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Bonus") bool bBonusesEnabled = true;
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Bonus") FString BonusMessage;
+    float BonusMessageUntil = 0;
+    UFUNCTION(BlueprintCallable, Category="Asteroids") bool SplitAsteroidPair(ASpaceAsteroid* A,ASpaceAsteroid* B);
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroids") TSubclassOf<class ACombatBurst> CollisionEffectClass;
     UFUNCTION(BlueprintCallable, Category="Asteroids") ASpaceAsteroid* SpawnAsteroid();
     UFUNCTION(BlueprintPure, Category="Run") bool IsPlaying() const { return State == ESpaceRunState::Playing; }
     UFUNCTION(BlueprintPure, Category="Run") bool IsInvulnerable() const;
@@ -39,9 +62,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Asteroids") bool bSpawningEnabled = true;
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:
     void ClearCombatActors();
     void SetMenuInput(bool bMenu);
     double ProtectedUntil = 0;
     float SpawnCountdown = 1.f;
+    float BonusCountdown = 8.f;
+    double DoubleScoreUntil = 0, ShieldUntil = 0, TripleShotUntil = 0;
 };
