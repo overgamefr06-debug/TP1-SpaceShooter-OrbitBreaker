@@ -35,17 +35,17 @@ ASpaceAsteroid::ASpaceAsteroid()
 void ASpaceAsteroid::BeginPlay()
 {
     Super::BeginPlay();
-    const int32 Lower = FMath::Max(1, MinimumHits);
-    const int32 Upper = FMath::Max(Lower, MaximumHits);
-    // Roll once when this asteroid appears, never again during an impact.
-    RemainingHits = FMath::RandRange(Lower, Upper);
+    // Pick a category once: silhouette, resistance and reward stay linked.
+    if (bRandomSize) SizeClass = static_cast<EAsteroidSize>(FMath::RandRange(0,2));
+    const int32 Tier = FMath::Clamp(static_cast<int32>(SizeClass),0,2);
+    RemainingHits = FMath::Max(1, HitsBySize[Tier]);
+    ScoreValue = FMath::Max(0, PointsBySize[Tier]);
+    SetActorScale3D(FVector(FMath::Max(.1, SizeScales[Tier])));
     Spin = FMath::FRandRange(-38.f, 38.f);
     if (!MeshVariants.IsEmpty())
     {
         Mesh->SetStaticMesh(MeshVariants[FMath::RandHelper(MeshVariants.Num())]);
         Mesh->SetRelativeScale3D(FVector::OneVector);
-        const float Scale = FMath::FRandRange(FMath::Max(.2f, MinimumScale), FMath::Max(MinimumScale, MaximumScale));
-        SetActorScale3D(FVector(Scale));
         Mesh->SetRelativeRotation(FRotator(0,FMath::FRandRange(0.f,360.f),0));
     }
 }
@@ -75,7 +75,7 @@ void ASpaceAsteroid::ReceiveShot()
     if (RemainingHits == 0)
     {
         bDestroyedByShot = true;
-        if (auto* Mode = GetWorld()->GetAuthGameMode<ASpaceGameMode>()) Mode->AwardAsteroid();
+        if (auto* Mode = GetWorld()->GetAuthGameMode<ASpaceGameMode>()) Mode->AwardAsteroid(ScoreValue);
         Collision->SetSimulatePhysics(false);
         Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         if (DestructionEffectClass)

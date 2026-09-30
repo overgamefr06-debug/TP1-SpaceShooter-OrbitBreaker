@@ -34,24 +34,29 @@ public:
         if (!bStarted)
         {
             bStarted=true; Start=Now; LastFrame=Now;
-            Folder=FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir()/TEXT("DemoCapture"));
+            Folder=FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir()/TEXT("FleetDemoCapture"));
             IFileManager::Get().MakeDirectory(*Folder,true);
             UAudioMixerBlueprintLibrary::StartRecordingOutput(W,65.f);
         }
         const double T=Now-Start;
         auto Key=[PC](FKey K,bool Down) { PC->InputKey(FInputKeyEventArgs::CreateSimulated(K,Down?IE_Pressed:IE_Released,Down?1.f:0.f)); };
         auto Hold=[&Key](FKey K,bool Wanted,bool& Held) { if(Wanted!=Held) { Key(K,Wanted); Held=Wanted; } };
-        if (!bLaunched && T>=3.) { Key(EKeys::Enter,true); Key(EKeys::Enter,false); bLaunched=true; }
+        if (!bLaunched)
+        {
+            // Show all three selectable portraits before starting normal gameplay.
+            Mode->SelectShip(T<3.?0:(T<6.?1:2));
+            if(T>=9.) { Key(EKeys::Enter,true); Key(EKeys::Enter,false); bLaunched=true; }
+        }
         if (Mode->State==ESpaceRunState::Playing)
         {
             // A slow rectangular patrol shows all four directional controls.
-            const double Phase=FMath::Fmod(FMath::Max(0.,T-3.),8.);
-            const bool Patrol=T<34.;
+            const double Phase=FMath::Fmod(FMath::Max(0.,T-9.),8.);
+            const bool Patrol=T<42.;
             Hold(EKeys::Right,Patrol && Phase<1.,Right);
             Hold(EKeys::Up,Patrol && Phase>=2. && Phase<2.55,Up);
             Hold(EKeys::Left,Patrol && Phase>=4. && Phase<5.,Left);
             Hold(EKeys::Down,Patrol && Phase>=6. && Phase<6.55,Down);
-            Hold(EKeys::SpaceBar,T<34.,Fire);
+            Hold(EKeys::SpaceBar,T<42.,Fire);
         }
         else
         {

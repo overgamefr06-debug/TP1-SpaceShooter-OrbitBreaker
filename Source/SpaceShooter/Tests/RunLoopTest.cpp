@@ -32,7 +32,19 @@ public:
         {
         case 0:
             Test->TestTrue(TEXT("The initial screen is the menu"),Mode->State==ESpaceRunState::Menu);
-            Mode->StartRun(); Mode->MinimumSpawnDelay=.12f; Mode->MaximumSpawnDelay=.2f;
+            for(int32 Index=0;Index<3;++Index)
+            {
+                Mode->SelectShip(Index);
+                Test->TestEqual(TEXT("Menu selects each ship"),Mode->SelectedShip,Index);
+                Test->TestEqual(TEXT("Selection applies the matching material"),Ship->ShipStyle,Index);
+            }
+            Mode->SelectShip(8);
+            Test->TestEqual(TEXT("Invalid selection is ignored"),Mode->SelectedShip,2);
+            Mode->StartRun();
+            Mode->SelectShip(0);
+            Test->TestEqual(TEXT("Fleet cannot switch during combat"),Mode->SelectedShip,2);
+            Test->TestEqual(TEXT("Selected ship persists into combat"),Ship->ShipStyle,2);
+            Mode->MinimumSpawnDelay=.12f; Mode->MaximumSpawnDelay=.2f;
             Test->TestEqual(TEXT("Run starts with three lives"),Mode->Lives,3);
             Test->TestFalse(TEXT("Recovery shield prevents immediate life loss"),Mode->LoseLife());
             Next=Now+2.f; break;
@@ -48,7 +60,7 @@ public:
                 if (!A) continue;
                 const FVector P=A->GetActorLocation();
                 Test->TestTrue(TEXT("Asteroid starts on a configured border"),FMath::IsNearlyEqual(FMath::Abs(P.X),double(Mode->SpawnHalfSize.X),.1) || FMath::IsNearlyEqual(FMath::Abs(P.Y),double(Mode->SpawnHalfSize.Y),.1));
-                Test->TestTrue(TEXT("Spawn health lies in configured range"),A->RemainingHits>=A->MinimumHits && A->RemainingHits<=A->MaximumHits);
+                Test->TestTrue(TEXT("Spawn health lies in configured range"),A->RemainingHits==static_cast<int32>(A->SizeClass)+1);
                 A->Destroy();
             }
             Rock=W->SpawnActor<ASpaceAsteroid>(FVector(0,600,0),FRotator::ZeroRotator);
@@ -60,8 +72,9 @@ public:
             if(Rock.IsValid())
             {
                 const int32 Hits=Rock->RemainingHits;
+                const int32 ExpectedScore=Rock->ScoreValue;
                 for(int32 i=0;i<Hits;++i) Rock->ReceiveShot();
-                Test->TestEqual(TEXT("Only destruction awards one score increment"),Mode->Score,Mode->PointsPerAsteroid);
+                Test->TestEqual(TEXT("Only destruction awards one score increment"),Mode->Score,ExpectedScore);
             }
             Contact(); Next=Now+.3f; break;
         case 3:
@@ -84,6 +97,7 @@ public:
             Test->TestNull(TEXT("No spawn after game over"),Mode->SpawnAsteroid());
             Mode->StartRun();
             Test->TestTrue(TEXT("Restart restores lives, score and visible ship"),Mode->Lives==3 && Mode->Score==0 && !Ship->IsHidden());
+            Test->TestEqual(TEXT("Restart preserves ship choice"),Ship->ShipStyle,2);
             Mode->ReturnToMenu();
             Test->TestTrue(TEXT("Return to menu stops the run"),Mode->State==ESpaceRunState::Menu);
             return true;

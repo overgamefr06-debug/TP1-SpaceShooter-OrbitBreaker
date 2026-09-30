@@ -45,6 +45,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Weapon", meta=(ClampMin="50"))
     float MuzzleOffset = 65.f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ship|Fleet") TArray<TObjectPtr<UMaterialInterface>> ShipMaterials;
+    UFUNCTION(BlueprintCallable, Category="Ship|Fleet") void ApplyShipStyle(int32 Index);
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Ship|Fleet") int32 ShipStyle = 0;
+
     UFUNCTION(BlueprintCallable, Category="Ship|Weapon")
     void TryFire();
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ship|Effects") TSubclassOf<ACombatBurst> DamageEffectClass;

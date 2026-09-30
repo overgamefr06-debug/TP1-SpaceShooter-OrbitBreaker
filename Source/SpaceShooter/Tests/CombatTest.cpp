@@ -36,7 +36,7 @@ public:
         auto Target = [World](FVector Position, int32 Minimum, int32 Maximum)
         {
             auto* Rock = World->SpawnActorDeferred<ASpaceAsteroid>(ASpaceAsteroid::StaticClass(), FTransform(Position));
-            Rock->MinimumHits = Minimum; Rock->MaximumHits = Maximum;
+            Rock->bRandomSize = false; Rock->SizeClass = static_cast<EAsteroidSize>(FMath::Clamp(Minimum-1,0,2));
             Rock->FinishSpawning(FTransform(Position));
             return Rock;
         };
@@ -94,19 +94,20 @@ public:
             Test->TestTrue(TEXT("Fast swept projectile hits one overlapping asteroid only"),
                 Rock.IsValid() && OtherRock.IsValid() && Rock->RemainingHits+OtherRock->RemainingHits==3);
             Rock->Destroy(); OtherRock->Destroy();
-            for (int32 i=0;i<20;++i)
+            for (int32 Tier=0;Tier<3;++Tier)
             {
-                auto* Sample=Target(FVector(400,800,0),2,5);
-                int32 Hits=Sample->RemainingHits;
-                Test->TestTrue(TEXT("Initial random resistance stays within configured range"),Hits>=2 && Hits<=5);
-                Sample->ReceiveShot();
-                Test->TestEqual(TEXT("Damage decrements existing resistance, without rerolling"),Sample->RemainingHits,Hits-1);
-                Sample->Destroy();
-            }
-            {
-                auto* Invalid=Target(FVector(400,800,0),-3,-8);
-                Test->TestEqual(TEXT("Invalid resistance settings are clamped"),Invalid->RemainingHits,1);
-                Invalid->Destroy();
+                auto* Sample=Target(FVector(400,800,0),Tier+1,Tier+1);
+                auto* Mode=World->GetAuthGameMode<ASpaceGameMode>();
+                const int32 Before=Mode->Score;
+                const int32 ExpectedPoints=Tier==2?400:(Tier+1)*100;
+                Test->TestEqual(TEXT("Size determines resistance"),Sample->RemainingHits,Tier+1);
+                Test->TestEqual(TEXT("Size determines reward"),Sample->ScoreValue,ExpectedPoints);
+                Test->TestTrue(TEXT("Size determines visible and collision scale"),FMath::IsNearlyEqual(Sample->GetActorScale3D().X,Sample->SizeScales[Tier]));
+                for(int32 Hit=0;Hit<Tier;++Hit) Sample->ReceiveShot();
+                Test->TestEqual(TEXT("Nonlethal hits do not award points"),Mode->Score,Before);
+                Test->TestEqual(TEXT("Asteroid survives until its final hit"),Sample->RemainingHits,1);
+                Sample->ReceiveShot(); Sample->ReceiveShot();
+                Test->TestEqual(TEXT("Final hit awards exactly the category reward once"),Mode->Score,Before+ExpectedPoints);
             }
             Rock=Target(FVector(65,0,0),2,2);
             Ship->TryFire();

@@ -71,6 +71,7 @@ void ASpaceGameMode::StartRun()
     State = ESpaceRunState::Playing;
     if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0)))
     {
+        Ship->ApplyShipStyle(SelectedShip);
         Ship->SetActorLocation(FVector(-180, 0, 0));
         Ship->SetActorScale3D(FVector::OneVector);
         Ship->SetActorHiddenInGame(false);
@@ -85,7 +86,7 @@ void ASpaceGameMode::ReturnToMenu()
     ClearCombatActors();
     if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0)))
     {
-        Ship->SetActorHiddenInGame(false);
+        Ship->SetActorHiddenInGame(true);
         Ship->Movement->StopMovementImmediately();
         Ship->SetActorLocation(FVector(0, 400, 0));
         Ship->SetActorScale3D(FVector(2.7f));
@@ -116,9 +117,16 @@ bool ASpaceGameMode::LoseLife()
     return true;
 }
 
-void ASpaceGameMode::AwardAsteroid()
+void ASpaceGameMode::AwardAsteroid(int32 Points)
 {
-    if (IsPlaying()) Score += FMath::Max(0, PointsPerAsteroid);
+    if (IsPlaying()) Score += FMath::Max(0, Points);
+}
+
+void ASpaceGameMode::SelectShip(int32 Index)
+{
+    if (State != ESpaceRunState::Menu || Index < 0 || Index > 2) return;
+    SelectedShip = Index;
+    if (auto* Ship = Cast<AShipPawn>(UGameplayStatics::GetPlayerPawn(this, 0))) Ship->ApplyShipStyle(Index);
 }
 
 ASpaceAsteroid* ASpaceGameMode::SpawnAsteroid()

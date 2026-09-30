@@ -7,6 +7,9 @@ class USphereComponent;
 class UStaticMeshComponent;
 class ACombatBurst;
 
+UENUM(BlueprintType)
+enum class EAsteroidSize : uint8 { Small, Medium, Large };
+
 UCLASS()
 class SPACESHOOTER_API ASpaceAsteroid : public AActor
 {
@@ -22,17 +25,17 @@ public:
     TObjectPtr<USphereComponent> Collision;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Asteroid")
     TObjectPtr<UStaticMeshComponent> Mesh;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Resistance", meta=(ClampMin="1"))
-    int32 MinimumHits = 1;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Resistance", meta=(ClampMin="1"))
-    int32 MaximumHits = 3;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Size") bool bRandomSize = true;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Size") EAsteroidSize SizeClass = EAsteroidSize::Small;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroid|Size") FVector SizeScales = FVector(.55f, .95f, 1.45f);
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroid|Size") FIntVector HitsBySize = FIntVector(1,2,3);
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroid|Size") FIntVector PointsBySize = FIntVector(100,200,400);
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Asteroid|Size") int32 ScoreValue = 100;
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Asteroid|Resistance")
     int32 RemainingHits = 0;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Effects")
     TSubclassOf<ACombatBurst> DestructionEffectClass;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") TArray<TObjectPtr<UStaticMesh>> MeshVariants;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") float MinimumScale = .65f;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") float MaximumScale = 1.05f;
 protected:
     virtual void BeginPlay() override;
 private:

@@ -17,7 +17,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="Run") void StartRun();
     UFUNCTION(BlueprintCallable, Category="Run") void ReturnToMenu();
     UFUNCTION(BlueprintCallable, Category="Run") bool LoseLife();
-    UFUNCTION(BlueprintCallable, Category="Run") void AwardAsteroid();
+    UFUNCTION(BlueprintCallable, Category="Run") void AwardAsteroid(int32 Points = 100);
+    UFUNCTION(BlueprintCallable, Category="Fleet") void SelectShip(int32 Index);
+    UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Fleet") int32 SelectedShip = 0;
     UFUNCTION(BlueprintCallable, Category="Asteroids") ASpaceAsteroid* SpawnAsteroid();
     UFUNCTION(BlueprintPure, Category="Run") bool IsPlaying() const { return State == ESpaceRunState::Playing; }
     UFUNCTION(BlueprintPure, Category="Run") bool IsInvulnerable() const;
@@ -26,7 +28,6 @@ public:
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Run") int32 Lives = 3;
     UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Run") float SurvivalTime = 0;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Run") int32 StartingLives = 3;
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Run") int32 PointsPerAsteroid = 100;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Run", meta=(ClampMin="0.1")) float InvulnerabilitySeconds = 1.5f;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroids") TSubclassOf<ASpaceAsteroid> AsteroidClass;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Asteroids") FVector2D SpawnHalfSize = FVector2D(615, 1060);

@@ -66,6 +66,7 @@ void AShipPawn::BeginPlay()
     Super::BeginPlay();
     Collision->OnComponentBeginOverlap.AddDynamic(this, &AShipPawn::OnContact);
     Movement->MaxSpeed = FMath::Max(1.f, MoveSpeed);
+    ApplyShipStyle(0);
     APlayerController* PC = Cast<APlayerController>(GetController());
     if (!PC || !PC->GetLocalPlayer()) return;
     auto* Input = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
@@ -114,6 +115,13 @@ void AShipPawn::SetupPlayerInputComponent(UInputComponent* Input)
         Enhanced->BindAction(MenuAction, ETriggerEvent::Started, this, &AShipPawn::OpenMenu);
         Enhanced->BindAction(StartAction, ETriggerEvent::Started, this, &AShipPawn::StartFromMenu);
     }
+}
+
+void AShipPawn::ApplyShipStyle(int32 Index)
+{
+    if (!ShipMaterials.IsValidIndex(Index) || !ShipMaterials[Index]) return;
+    ShipStyle = Index;
+    Hull->SetMaterial(0, ShipMaterials[Index]);
 }
 
 void AShipPawn::TryFire()
@@ -172,6 +180,15 @@ void AShipPawn::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     auto* Mode = GetWorld()->GetAuthGameMode<ASpaceGameMode>();
+    if (Mode && Mode->State == ESpaceRunState::Menu)
+    {
+        if (auto* PC = Cast<APlayerController>(GetController()))
+        {
+            if (PC->WasInputKeyJustPressed(EKeys::One) || PC->WasInputKeyJustPressed(EKeys::NumPadOne)) Mode->SelectShip(0);
+            if (PC->WasInputKeyJustPressed(EKeys::Two) || PC->WasInputKeyJustPressed(EKeys::NumPadTwo)) Mode->SelectShip(1);
+            if (PC->WasInputKeyJustPressed(EKeys::Three) || PC->WasInputKeyJustPressed(EKeys::NumPadThree)) Mode->SelectShip(2);
+        }
+    }
     const bool bBlink = Mode && Mode->IsPlaying() && Mode->IsInvulnerable() && FMath::Fmod(GetWorld()->GetTimeSeconds(), .16f) < .07f;
     Hull->SetVisibility(!bBlink);
     Wings->SetVisibility(!bBlink);

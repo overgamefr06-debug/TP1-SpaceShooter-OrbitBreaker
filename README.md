@@ -6,6 +6,7 @@ Prototype jouable réalisé avec Unreal Engine 5.8.3. Logique de jeu en C++, par
 
 Ouvrir `SpaceShooter.uproject`, charger `Content/Maps/L_Arena` et lancer Play. Dans le menu, cliquer **Lancer la mission** ou appuyer sur **Entrée**.
 
+- Menu : cliquer sur Aegis, Spectre ou Helios, ou utiliser 1 / 2 / 3 (pavé numérique également). Le choix est conservé lors des nouvelles parties. Les trois vaisseaux ont les mêmes performances.
 - Flèches, ZQSD ou WASD : déplacement dans les quatre directions.
 - Espace ou clic gauche, maintenu : tir avec cadence limitée.
 - R : recommencer une partie en cours ou terminée.
@@ -16,9 +17,17 @@ Exécutable autonome : `Build/Windows/SpaceShooter.exe`. Le dossier Windows comp
 
 ## Comportement
 
-Les astéroïdes apparaissent sur l'un des quatre bords, à une position et après un délai aléatoires. Une impulsion physique initiale les dirige vers la position du joueur avec une dispersion; ils ne poursuivent pas ensuite le joueur. Les astéroïdes tournent, ont une taille variable et nécessitent de un à trois tirs, tirés au hasard une seule fois à leur création.
+Les astéroïdes apparaissent sur l'un des quatre bords, à une position et après un délai aléatoires. Une impulsion physique initiale les dirige vers la position du joueur avec une dispersion; ils ne poursuivent pas ensuite le joueur. La catégorie de chaque astéroïde est choisie au hasard une seule fois à sa création. Elle lie la taille, la résistance et les points :
 
-La destruction par un projectile rapporte 100 points. Un contact retire une vie et consomme l'astéroïde. Une protection de 1,5 seconde évite de perdre plusieurs vies immédiatement; le vaisseau clignote pendant cette récupération. Une collision durant cette protection consomme aussi l'astéroïde, sans score. À zéro vie, les apparitions et le score s'arrêtent et le bilan propose de rejouer ou de revenir au menu.
+| Catégorie | Échelle | Tirs nécessaires | Points |
+|---|---:|---:|---:|
+| Petit | 0,55 | 1 | 100 |
+| Moyen | 0,95 | 2 | 200 |
+| Grand | 1,45 | 3 | 400 |
+
+Les astéroïdes tournent ; leur catégorie ne change pas lorsqu’ils sont touchés.
+
+Seul le tir qui détruit l’astéroïde rapporte les points de sa catégorie, une seule fois. Un contact retire une vie et consomme l'astéroïde. Une protection de 1,5 seconde évite de perdre plusieurs vies immédiatement; le vaisseau clignote pendant cette récupération. Une collision durant cette protection consomme aussi l'astéroïde, sans score. À zéro vie, les apparitions et le score s'arrêtent et le bilan propose de rejouer ou de revenir au menu.
 
 La difficulté augmente progressivement avec la vitesse des astéroïdes (plafond +50 % après 90 secondes). Leur nombre est limité et ceux sortis de la zone sont supprimés. Le redémarrage nettoie astéroïdes, projectiles et effets puis réinitialise score, vies et durée.
 
@@ -26,33 +35,39 @@ La difficulté augmente progressivement avec la vitesse des astéroïdes (plafon
 
 | C++ | Blueprint | Responsabilité et valeurs utiles |
 |---|---|---|
-| ShipPawn | BP_Ship | Entrées, mouvement, limites, cadence, projectile, effets, meshes |
+| ShipPawn | BP_Ship | Entrées, mouvement, limites, cadence, projectile, effets et trois matériaux de vaisseau |
 | ShotProjectile | BP_Projectile | Mouvement balayé, impact unique, vitesse et durée de vie |
-| SpaceAsteroid | BP_Asteroid | Résistance, impulsion physique, rotation, variantes de mesh et tailles |
+| SpaceAsteroid | BP_Asteroid | Trois catégories : taille, résistance et points liés; impulsion physique, rotation et variantes de mesh |
 | SpaceGameMode | BP_SpaceGameMode | Menu/partie/fin, score et vies; délais, vitesse, bord et plafond des apparitions |
 | CombatBurst | BP_MuzzleFlash / BP_AsteroidBurst | Fragments animés, durée, couleur et son |
-| SpaceHUD | BP_OrbitHUD | Interface Canvas, menu cliquable, textes, auteur, police et couleurs |
+| SpaceHUD | BP_OrbitHUD | Interface Canvas, sélection de flotte, portraits, emblème du score, icônes de vies et écrans de fin |
 
-L'interface est dessinée en C++ avec une police vectorielle et une mise à l'échelle; son Blueprint expose les textes et la direction artistique. Ce n'est pas encore un écran composé dans le Designer UMG.
+L’interface est dessinée en C++ avec mise à l’échelle : menu de flotte à trois fiches, aperçu animé, panneaux biseautés, emblème du score et icônes du vaisseau choisi pour les vies. Son Blueprint expose les textures et la direction artistique. Elle utilise Canvas, sans Designer UMG.
+
+![Menu de sélection](Files/MenuFlotte.png)
+![Interface en partie](Files/JeuFlotte.png)
 
 ## Assets originaux
 
-`Content/Art/Meshes` contient le vaisseau K-07, ses deux jets et trois variantes d'astéroïdes rocheux à facettes. Les couleurs par sommet donnent une surface lisible sans éclairage coûteux. `Content/Art` contient aussi la nébuleuse, ses matériaux et les sons de laser/impact.
+Les trois nouveaux vaisseaux **Aegis**, **Spectre** et **Helios**, ainsi que l’emblème de score, sont des PNG transparents détaillés créés pour le projet avec l’outil intégré imagegen. Les sources et les prompts complets sont dans `ArtSources/Fleet/Generation.md`. Ce sont des sprites prérendus appliqués sur un plan en jeu, et non des modèles 3D volumétriques. Les matériaux, textures et le plan sont dans `Content/Art/Fleet` ; `Tools/import_fleet_art.py` réalise leur import et configure les Blueprints. Les mêmes images servent aux portraits du menu et aux vies.
 
-Les meshes, la texture et les sons ont été créés pour ce projet, sans pack externe. Les sources PNG/WAV sont dans `ArtSources`; la génération est documentée dans `Tools/generate_atmosphere.py` et `Tools/create_orbit_art.py`. Les polices et primitives restantes proviennent d'Unreal. Les scripts de génération ne doivent être relancés qu'après checkout des assets concernés; ils appliquent les réglages de ce jalon.
+Les trois meshes d’astéroïdes, la nébuleuse et les sons proviennent des outils procéduraux du projet (`Tools/create_orbit_art.py`, `Tools/generate_atmosphere.py`). L’ancien vaisseau K-07 reste dans les sources du premier jalon mais a été remplacé en jeu. Les polices et primitives de base proviennent d’Unreal. Aucun pack externe n’est requis.
+
+Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, l’import de flotte doit venir **après** l’ancien script `create_orbit_art.py`, car ce dernier configure l’apparence du premier jalon.
 
 Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
-## Validation — 29 septembre 2026
+## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Shipping réussis.
-- Trois tests de gameplay réussis, sans avertissement : `Combat`, `ShipControls`, `RunLoop`. Rapport local : `Artifacts/TestsJalon3Final/index.json`.
-- Combat : touches de tir, cadence, impact unique, tir à bout portant, projectile rapide balayé, résistance et expiration.
+- Trois tests de gameplay réussis, sans avertissement : `Combat`, `ShipControls`, `RunLoop`. Rapport local : `Artifacts/FleetValidation/index.json`. Le quatrième test, `RecordDemo`, a également réussi et produit la capture de démonstration.
+- Combat : touches de tir, cadence, impact unique, tir à bout portant, projectile rapide balayé et expiration. Chaque catégorie est vérifiée : échelle, 1/2/3 impacts, aucun point avant destruction et gain unique de 100/200/400 points.
 - Mouvement : dix touches, directions, contrainte du plan et limites.
+- Flotte : les trois choix appliquent leur matériau, un index invalide est rejeté, la sélection est bloquée en combat et conservée après redémarrage.
 - Partie : écran initial, apparitions temporisées, positions sur les bords, déplacement après impulsion, score, collisions physiques, protection temporaire, dernière vie, arrêt du score, redémarrage et retour au menu.
-- Menu et assets inspectés visuellement dans le jeu Development; lancement depuis le bouton et fin de partie observés. La révision de police a ensuite été inspectée visuellement.
-- Build Windows Shipping final lancé depuis le workspace main : menu, démarrage par Entrée, apparitions et fin de partie, redémarrage par R, projectile à l'écran, retour au menu par Échap et bouton Quitter vérifiés. Les tests complets de mouvement et de collisions restent ceux exécutés dans l'éditeur.
-- Taille du build complet : **363 202 611 octets**, soit **363,20 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La structure de remise contient le build Windows, la vidéo et les captures des deux historiques.
+- Menu et HUD inspectés sur les captures réelles : trois portraits, aperçu, emblème de score, icônes de vies, silhouettes en jeu et trois tailles d’astéroïdes.
+- Build Windows Shipping de la refonte : menu, sélection du Spectre à la souris, sélection d’Helios au pavé numérique et lancement par le bouton vérifiés. Les tests complets de mouvement, de résistance et de collisions sont exécutés dans l’éditeur.
+- Taille du build complet : **365 154 162 octets**, soit **365,15 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La structure de remise contient le build Windows, la vidéo et les captures des deux historiques.
 
 ## Gestion de versions et remise
 
@@ -64,7 +79,7 @@ Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Doc
 
 `Files/PerforceCommits.png` est une capture réelle de P4V montrant les changements main/dev et la résolution.
 
-`Files/VideoDemoJeux.mp4` contient 34 secondes de gameplay réel capturé dans Unreal : menu, quatre directions, tirs, score, collisions, perte des trois vies, fin de partie et nouvelle partie. Les commandes sont simulées par l'outil d'enregistrement Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build du jeu. Les images du viewport sont assemblées en respectant leurs horodatages; la vidéo est muette, la capture audio hors écran n'étant pas correctement synchronisée. Le jeu lui-même dispose de sons. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
+`Files/VideoDemoJeux.mp4` contient environ 59 secondes de capture réelle dans Unreal : aperçu des trois vaisseaux, lancement avec Helios, déplacements, tirs, score, collisions, fin de partie et nouvelle partie. Les commandes sont simulées par l'outil d'enregistrement Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build du jeu. Les images du viewport sont assemblées en respectant leurs horodatages; la vidéo est muette, la capture audio hors écran n'étant pas correctement synchronisée. Le jeu lui-même dispose de sons. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
 
 Dépôt GitHub public : https://github.com/overgamefr06-debug/TP1-SpaceShooter-OrbitBreaker
 
