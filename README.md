@@ -52,9 +52,9 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Partie : écran initial, apparitions temporisées, positions sur les bords, déplacement après impulsion, score, collisions physiques, protection temporaire, dernière vie, arrêt du score, redémarrage et retour au menu.
 - Menu et assets inspectés visuellement dans le jeu Development; lancement depuis le bouton et fin de partie observés. La révision de police a ensuite été inspectée visuellement.
 - Build Windows Shipping final lancé depuis le workspace main : menu, démarrage par Entrée, apparitions et fin de partie, redémarrage par R, projectile à l'écran, retour au menu par Échap et bouton Quitter vérifiés. Les tests complets de mouvement et de collisions restent ceux exécutés dans l'éditeur.
-- Taille du build complet : **363 202 611 octets**, soit **363,20 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La remise reste incomplète tant que GitHub et sa capture ne sont pas publiés.
+- Taille du build complet : **363 202 611 octets**, soit **363,20 Mo** (hors journaux temporaires exclus du dépôt), sous la limite de 500 Mo. Le build jouable est également intégré sur le stream Perforce main. La structure de remise contient le build Windows, la vidéo et les captures des deux historiques.
 
-## Gestion de versions et travail restant
+## Gestion de versions et remise
 
 Le dossier de travail `SpaceShooter` correspond au stream Perforce `//20263_8PRO135_KEVIN_ORTEGA/dev`, workspace `kortega_tp1_dev_DESKTOP_6NT64UN`. Le serveur est `ssl:p4prod.uqac.ca:1666`, utilisateur `kortega`. Avant de modifier un fichier suivi, faire Check Out; les assets utilisent le type exclusif `binary+l`. Les caches, rapports et paramètres de connexion restent exclus. Le dossier `Build/Windows` est versionné dans Perforce et ignoré dans Git.
 
@@ -66,4 +66,10 @@ Les conflits volontaires Git et Perforce sont réalisés et expliqués dans `Doc
 
 `Files/VideoDemoJeux.mp4` contient 34 secondes de gameplay réel capturé dans Unreal : menu, quatre directions, tirs, score, collisions, perte des trois vies, fin de partie et nouvelle partie. Les commandes sont simulées par l'outil d'enregistrement Editor `SpaceShooter.Delivery.RecordDemo`, exclu du build du jeu. Les images du viewport sont assemblées en respectant leurs horodatages; la vidéo est muette, la capture audio hors écran n'étant pas correctement synchronisée. Le jeu lui-même dispose de sons. Les sources de capture temporaires restent dans Saved, ignoré par Git et Perforce.
 
-Avant la remise : connecter GitHub, créer/publier le dépôt public avec main et dev, puis enregistrer sa véritable capture d'historique dans `Files/GithubCommits.png`. Aucun dépôt distant GitHub n'est encore configuré. Les notes et transcriptions des cours restent hors du projet remis.
+Dépôt GitHub public : https://github.com/overgamefr06-debug/TP1-SpaceShooter-OrbitBreaker
+
+Les branches `main` et `dev` sont publiées avec leur historique complet, dont le commit de fusion `88f1ef1` qui résout le conflit volontaire. `Files/GithubCommits.png` est une capture réelle de l'historique GitHub. Les trois fichiers demandés (`GithubCommits.png`, `PerforceCommits.png`, `VideoDemoJeux.mp4`) sont réunis dans `Files` sur le stream main de Perforce, à côté de `Build/Windows`.
+
+Les fichiers générés, les paramètres de connexion locaux, les notes et les transcriptions des cours restent hors du dépôt public. Le build est conservé dans Perforce et ignoré par Git. Les traces de tests locales restent dans `Artifacts`.
+
+Avant de remettre ou présenter le travail, rejouer une partie et relire `Docs/Conflits_revision_control.md` ainsi que les classes C++ pour pouvoir expliquer les choix techniques.
