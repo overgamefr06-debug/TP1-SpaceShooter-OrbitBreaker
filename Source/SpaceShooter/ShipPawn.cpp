@@ -15,6 +15,7 @@
 #include "InputModifiers.h"
 #include "Engine/LocalPlayer.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 AShipPawn::AShipPawn()
 {
@@ -70,7 +71,11 @@ void AShipPawn::BeginPlay()
 {
     Super::BeginPlay();
     ShieldGlow->SetStaticMesh(ShieldMesh);
-    if(ShieldMaterial) ShieldGlow->SetMaterial(0,ShieldMaterial);
+    if(ShieldMaterial)
+    {
+        ShieldDynamic=UMaterialInstanceDynamic::Create(ShieldMaterial,this);
+        ShieldGlow->SetMaterial(0,ShieldDynamic);
+    }
     Collision->OnComponentBeginOverlap.AddDynamic(this, &AShipPawn::OnContact);
     Movement->MaxSpeed = FMath::Max(1.f, MoveSpeed);
     ApplyShipStyle(0);
@@ -178,6 +183,7 @@ void AShipPawn::OnContact(UPrimitiveComponent*, AActor* Other, UPrimitiveCompone
     auto* Mode = GetWorld()->GetAuthGameMode<ASpaceGameMode>();
     if (!Rock || !IsValid(Rock) || !Rock->CausesContactDamage() || !Mode || !Mode->IsPlaying()) return;
     const bool bDamaged = Mode->LoseLife();
+    if(Mode->BonusSeconds(ESpaceBonus::Shield)>0) ShieldImpact=1.f;
     // A contact consumes the asteroid, including during the short recovery shield.
     Rock->Destroy();
     if (bDamaged && DamageEffectClass) GetWorld()->SpawnActor<ACombatBurst>(DamageEffectClass, GetActorLocation(), FRotator::ZeroRotator);
@@ -207,8 +213,18 @@ void AShipPawn::Tick(float DeltaSeconds)
     Hull->SetVisibility(!bBlink);
     Wings->SetVisibility(!bBlink);
     EngineGlow->SetVisibility(!bBlink);
-    ShieldGlow->SetVisibility(Mode && Mode->IsPlaying() && Mode->BonusSeconds(ESpaceBonus::Shield)>0);
-    ShieldGlow->SetRelativeScale3D(FVector(1.2f+.035f*FMath::Sin(GetWorld()->GetTimeSeconds()*3)));
+    const float ShieldSeconds=Mode && Mode->IsPlaying()?Mode->BonusSeconds(ESpaceBonus::Shield):0.f;
+    const float Target=FMath::Clamp(ShieldSeconds/.45f,0.f,1.f);
+    ShieldFade=FMath::FInterpConstantTo(ShieldFade,Target,DeltaSeconds,4.f);
+    ShieldImpact=FMath::Max(0.f,ShieldImpact-DeltaSeconds*3.5f);
+    if(!Mode || !Mode->IsPlaying()) ShieldFade=0.f;
+    ShieldGlow->SetVisibility(ShieldFade>0.f);
+    ShieldGlow->SetRelativeScale3D(FVector(1.04f,.89f,1.f)*FMath::Lerp(.65f,1.f,ShieldFade));
+    if(ShieldDynamic)
+    {
+        ShieldDynamic->SetScalarParameterValue(TEXT("Strength"),ShieldFade);
+        ShieldDynamic->SetScalarParameterValue(TEXT("Impact"),ShieldImpact);
+    }
     EngineGlow->SetRelativeScale3D(FVector(.92f + .12f * FMath::Sin(GetWorld()->GetTimeSeconds() * 34.f),1,1)*.68f);
     const FVector Position = GetActorLocation();
     const FVector Clamped(FMath::Clamp(Position.X, -ArenaHalfSize.X, ArenaHalfSize.X),

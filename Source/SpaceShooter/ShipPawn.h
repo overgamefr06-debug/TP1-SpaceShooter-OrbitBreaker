@@ -67,6 +67,9 @@ private:
     void StartFromMenu();
     UFUNCTION() void OnContact(UPrimitiveComponent* Overlapped, AActor* Other, UPrimitiveComponent* OtherComponent, int32 BodyIndex, bool bSweep, const FHitResult& Hit);
     double LastShotTime = -1.e10;
+    float ShieldFade = 0.f;
+    float ShieldImpact = 0.f;
+    UPROPERTY() TObjectPtr<class UMaterialInstanceDynamic> ShieldDynamic;
     UPROPERTY() TObjectPtr<UInputAction> MoveAction;
     UPROPERTY() TObjectPtr<UInputAction> FireAction;
     UPROPERTY() TObjectPtr<UInputAction> RestartAction;

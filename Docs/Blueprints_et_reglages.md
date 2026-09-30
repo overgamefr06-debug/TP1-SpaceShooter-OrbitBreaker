@@ -15,7 +15,9 @@ Dans Unreal, ouvrir le Content Browser, puis **Content → Blueprints**. Double-
 | `BP_BonusRepair` | Type Repair, sprite vert, présence 12 s. Restaure une vie, maximum trois. |
 | `BP_BonusTripleShot` | Type TripleShot, sprite orange, présence 12 s. |
 | `BP_RockCollision` | Son original, seize débris, anneau d’impact, durée 0,65 s et rayon d’expansion 125. Utilisé pour collision et destruction. |
-| `BP_OrbitHUD` | Ship Portraits, Bonus Icons, auteur. Affiche les informations du GameMode et les HP actuels des astéroïdes. |
+| `BP_OrbitHUD` | Title Logo, Ship Portraits, Bonus Icons, auteur. Affiche les informations du GameMode et les HP actuels des astéroïdes. |
+| `BP_CollectDoubleScore / Shield / Repair / TripleShot` | Onde lumineuse additive à la collecte, couleur propre à chaque bonus, durée 0,55 s. |
+| `BP_MuzzleFlash` | Éclat additif transparent, durée 0,10 s ; Fragment Count = 0. Remplace les anciens cubes opaques responsables du rectangle au départ du tir. |
 
 ## Suivre un mécanisme dans le code
 
@@ -29,6 +31,10 @@ Les fonctions de jeu marquées `BlueprintCallable` et les valeurs `BlueprintRead
 
 ## Sources et reconstruction
 
-Art source : `ArtSources/Arcade`, import Unreal : `Tools/import_arcade_content.py`, sons originaux : `Tools/generate_arcade_audio.py`. Le dernier import à exécuter est l’import **arcade**, après les anciens imports de contenu puis de flotte. Les scripts historiques reproduisent les étapes précédentes et ne doivent pas écraser les nouveaux réglages.
+Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, et **en dernier `Tools/import_effects_content.py`** pour le logo, les bonus détourés et les nouveaux effets. Faire Check Out sur les assets existants avant de relancer un import.
+
+Chaque `BP_Bonus…` expose Aura Mesh, Aura Material et Collect Effect Class. Le matériau anime trois petites particules autour du symbole ; le composant Visual flotte doucement. Le bouclier de `BP_Ship` utilise `M_EnergyShield` : bord électrique, cellules hexagonales discrètes et centre transparent. `Strength` pilote son apparition et sa disparition ; `Impact` produit une impulsion lors du contact avec un astéroïde. Ces paramètres changent l’apparence, pas la durée de protection de dix secondes.
 
 Les validations automatiques se lancent avec `-OrbitTestMode` pour protéger la vraie sauvegarde. Le test `SpaceShooter.Gameplay.ArcadeSystems` utilise un slot temporaire distinct pour vérifier l’enregistrement sur disque et le supprime ensuite.
+
+Le test `SpaceShooter.Visual.Effects` compare les pixels de chaque vaisseau au repos et pendant une série de tirs. Il échoue si plus de 5 % de ses pixels lumineux deviennent noirs et conserve les captures dans `Saved/EffectsValidation`.

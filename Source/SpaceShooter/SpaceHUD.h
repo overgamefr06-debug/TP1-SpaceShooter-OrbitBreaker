@@ -19,6 +19,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface") FLinearColor Warm = FLinearColor(1.f,.49f,.2f);
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TArray<TObjectPtr<UTexture2D>> ShipPortraits;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TObjectPtr<UTexture2D> ScoreEmblem;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TObjectPtr<UTexture2D> TitleLogo;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interface|Art") TArray<TObjectPtr<UTexture2D>> BonusIcons;
 private:
     float Scale = 1, OffsetX = 0, OffsetY = 0;

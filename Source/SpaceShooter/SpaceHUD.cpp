@@ -130,8 +130,13 @@ void ASpaceHUD::DrawHUD()
     Panel(0,0,1600,900,FLinearColor(.003f,.004f,.009f,.63f));
     if(Mode->State==ESpaceRunState::Menu)
     {
-        Label(GameTitle,800,140,3.2f,White,true);
-        Label(FString::Printf(TEXT("MEILLEUR SCORE   %06d"),Mode->BestScore),800,227,.72f,Muted,true);
+        if(TitleLogo)
+        {
+            const float W=560.f,H=W*TitleLogo->GetSizeY()/FMath::Max(1,TitleLogo->GetSizeX());
+            Sprite(TitleLogo,800-W*.5f,68,W,H);
+        }
+        else Label(GameTitle,800,140,3.2f,White,true);
+        Label(FString::Printf(TEXT("MEILLEUR SCORE   %06d"),Mode->BestScore),800,267,.72f,Muted,true);
         for(int32 i=0;i<3;++i)
         {
             const float X=477+i*230.f,Y=320;

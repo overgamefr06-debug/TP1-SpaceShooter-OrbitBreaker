@@ -62,33 +62,38 @@ L’interface est dessinée en C++ avec mise à l’échelle : menu centré sans
 
 ![Menu de sélection](Files/MenuFlotte.png)
 ![Interface en partie](Files/JeuFlotte.png)
+![Bonus détourés et bouclier électrique](Files/BonusEtBouclier.png)
 
 ## Assets originaux
 
 Les trois nouveaux vaisseaux **Aegis**, **Spectre** et **Helios**, ainsi que l’emblème de score, sont des PNG transparents détaillés créés pour le projet avec l’outil intégré imagegen. Les sources et les prompts complets sont dans `ArtSources/Fleet/Generation.md`. Ce sont des sprites prérendus appliqués sur un plan en jeu, et non des modèles 3D volumétriques. Les matériaux, textures et le plan sont dans `Content/Art/Fleet` ; `Tools/import_fleet_art.py` réalise leur import et configure les Blueprints. Les mêmes images servent aux portraits du menu et aux vies.
 
-Les astéroïdes actuels utilisent **deux nouveaux sprites rocheux transparents** générés pour le projet, sans cristaux ni facettes géométriques artificielles. Les quatre bonus ont chacun leur icône originale. Sources, provenance et prompts : `ArtSources/Arcade/Generation.md`. Import et réglages : `Tools/import_arcade_content.py`.
+Les astéroïdes actuels utilisent **deux nouveaux sprites rocheux transparents** générés pour le projet, sans cristaux ni facettes géométriques artificielles. Sources et prompts : `ArtSources/Arcade/Generation.md` ; import : `Tools/import_arcade_content.py`.
+
+Le logo **Orbit Breaker** argent/orange remplace le titre texte du menu. Les quatre bonus sont des symboles détourés sans tuile de fond : ×2 doré, bouclier bleu, cristal de réparation vert et trois lasers orange. Sources PNG RGBA originales et prompts imagegen : [ArtSources/Effects/Generation.md](ArtSources/Effects/Generation.md). Ils flottent avec des particules orbitales et déclenchent une onde colorée à la collecte. Le bouclier est une enveloppe électrique animée, avec cellules hexagonales discrètes, apparition progressive, impulsion d’impact et disparition en fin de protection. Les matériaux et animations sont natifs à Unreal, configurés par les Blueprints.
+
+L’ancien flash de tir composé de cubes provoquait un rectangle noir devant le vaisseau. Il est remplacé par un éclat additif transparent ; les composants de fragments démarrent également avec une taille minimale avant leur initialisation. Un test visuel dédié compare les trois vaisseaux avant et pendant le tir pour détecter toute nouvelle disparition de pixels.
 
 Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débris sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes et l’emblème restent dans les sources historiques mais ne composent plus le décor ou le HUD actuel. Les polices et primitives de base proviennent d’Unreal. Aucun pack externe n’est requis.
 
 Références de lisibilité étudiées : [Super Stardust HD](https://housemarque.com/games/sshd) et [Nova Drift](https://store.steampowered.com/app/858210/Nova_Drift/). Aucun asset de ces jeux n’a été copié.
 
-Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, puis **l’import arcade en dernier**, car les scripts précédents rétablissent l’apparence de leurs jalons.
+Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade puis **`Tools/import_effects_content.py` en dernier**, car les scripts précédents rétablissent l’apparence de leurs jalons.
 
 Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
 ## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Windows Shipping réussis.
-- Quatre tests de gameplay et l’enregistrement de démonstration passent : **5 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/ArcadeValidation/index.json`.
+- Quatre tests de gameplay, le test visuel des effets et l’enregistrement de démonstration passent : **6 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/EffectsValidation/index.json`.
 - Combat : commandes de tir, cadence, impact unique, expiration, projectiles rapides, résistances 1/2/3 et scores 100/200/400.
 - Commandes et partie : déplacements, limites, apparitions aléatoires, impulsion physique, collisions, protection après dégâts, fin, redémarrage et retour au menu.
 - Nouveaux systèmes : collisions physiques de deux grands en trois moyens et de deux moyens en trois petits, catégories différentes exclues, aucun score de collision, grâce des fragments et effet créé.
 - Bonus : collecte réelle une seule fois, ×2 puis retour au score normal, bouclier puis reprise des dégâts, réparation plafonnée, trois trajectoires simultanées et retour au tir simple après expiration.
 - Progression : seuils 4 999 / 5 000 et 14 999 / 15 000, refus du vaisseau verrouillé, record non cumulé entre parties, sauvegarde sur disque et rechargement dans un slot temporaire distinct de celui du joueur.
-- Menu et jeu inspectés sur les captures réelles : nouveaux rochers et bonus, HP segmentés, petite silhouette du vaisseau, anneau du bouclier et tirs triples. Caméra orthographique réglée avec une plage de profondeur fixe pour éviter le découpage des sprites.
+- Menu et jeu inspectés sur les captures réelles : logo transparent, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test visuel reproduisait la disparition de 19 à 30 % des pixels lumineux lors du tir avec l’ancien flash ; après remplacement, la validation finale mesure au plus 0,3 % sur les trois vaisseaux (seuil de régression : 5 %).
 - Build Windows lancé et menu/partie vérifiés ; les vérifications complètes des mécaniques sont réalisées dans l’éditeur.
-- Build complet : **367891642 octets**, soit **367.89 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
+- Build complet : **368911733 octets**, soit **368.91 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
 
 ## Gestion de versions et remise
 
