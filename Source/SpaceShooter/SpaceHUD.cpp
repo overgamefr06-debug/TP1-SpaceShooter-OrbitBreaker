@@ -132,8 +132,12 @@ void ASpaceHUD::DrawHUD()
     {
         if(TitleLogo)
         {
-            const float W=560.f,H=W*TitleLogo->GetSizeY()/FMath::Max(1,TitleLogo->GetSizeX());
-            Sprite(TitleLogo,800-W*.5f,68,W,H);
+            const float T=GetWorld()->GetTimeSeconds();
+            const float W=560.f*(1.f+.008f*FMath::Sin(T*.9f));
+            const float H=W*TitleLogo->GetSizeY()/FMath::Max(1,TitleLogo->GetSizeX());
+            const float X=800-W*.5f,Y=68+4.f*FMath::Sin(T*1.15f);
+            DrawTexture(TitleLogo,OffsetX+X*Scale,OffsetY+Y*Scale,W*Scale,H*Scale,
+                0,0,1,1,FLinearColor::White,BLEND_Translucent,1.f,false,.45f*FMath::Sin(T*.7f),FVector2D(.5f,.5f));
         }
         else Label(GameTitle,800,140,3.2f,White,true);
         Label(FString::Printf(TEXT("MEILLEUR SCORE   %06d"),Mode->BestScore),800,267,.72f,Muted,true);

@@ -27,6 +27,8 @@ ASpaceAsteroid::ASpaceAsteroid()
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(Collision);
     Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Mesh->SetCastShadow(false);
+    Mesh->bUseAsOccluder=false;
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Sphere(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
     Mesh->SetStaticMesh(Sphere.Object);
     Mesh->SetRelativeScale3D(FVector(1.15f, 1.f, .75f));

@@ -24,6 +24,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
     TObjectPtr<UMaterialInterface> Material;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<USoundBase> Sound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect|Audio") TArray<TObjectPtr<USoundBase>> SoundVariants;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UStaticMesh> FragmentMesh;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UStaticMesh> ShockwaveMesh;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect") TObjectPtr<UMaterialInterface> ShockwaveMaterial;

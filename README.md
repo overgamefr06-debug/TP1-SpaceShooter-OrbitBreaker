@@ -74,26 +74,28 @@ Le logo **Orbit Breaker** argent/orange remplace le titre texte du menu. Les qua
 
 L’ancien flash de tir composé de cubes provoquait un rectangle noir devant le vaisseau. Il est remplacé par un éclat additif transparent ; les composants de fragments démarrent également avec une taille minimale avant leur initialisation. Un test visuel dédié compare les trois vaisseaux avant et pendant le tir pour détecter toute nouvelle disparition de pixels.
 
+La correction couvre aussi les astéroïdes : textures avec alpha complet, laser additif et explosions de poussière/étincelles sans primitives opaques. Un second test visuel contrôle qu’une destruction proche ne noircit pas le rocher survivant. Le logo du menu flotte doucement et s’incline légèrement. Le laser joue aléatoirement l’un de trois nouveaux sons à impulsion, plus courts et graves, synthétisés sans échantillon externe : [sources audio](ArtSources/Effects/LaserAudio.md).
+
 Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débris sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes et l’emblème restent dans les sources historiques mais ne composent plus le décor ou le HUD actuel. Les polices et primitives de base proviennent d’Unreal. Aucun pack externe n’est requis.
 
 Références de lisibilité étudiées : [Super Stardust HD](https://housemarque.com/games/sshd) et [Nova Drift](https://store.steampowered.com/app/858210/Nova_Drift/). Aucun asset de ces jeux n’a été copié.
 
-Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade puis **`Tools/import_effects_content.py` en dernier**, car les scripts précédents rétablissent l’apparence de leurs jalons.
+Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade, l’import des effets puis **`Tools/import_combat_polish.py` en dernier**, après `Tools/generate_laser_audio.py`. Les scripts précédents rétablissent l’apparence de leurs jalons.
 
 Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
 ## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Windows Shipping réussis.
-- Quatre tests de gameplay, le test visuel des effets et l’enregistrement de démonstration passent : **6 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/EffectsValidation/index.json`.
+- Quatre tests de gameplay, deux tests visuels des effets et l’enregistrement de démonstration passent : **7 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/CombatPolishValidation/index.json`.
 - Combat : commandes de tir, cadence, impact unique, expiration, projectiles rapides, résistances 1/2/3 et scores 100/200/400.
 - Commandes et partie : déplacements, limites, apparitions aléatoires, impulsion physique, collisions, protection après dégâts, fin, redémarrage et retour au menu.
 - Nouveaux systèmes : collisions physiques de deux grands en trois moyens et de deux moyens en trois petits, catégories différentes exclues, aucun score de collision, grâce des fragments et effet créé.
 - Bonus : collecte réelle une seule fois, ×2 puis retour au score normal, bouclier puis reprise des dégâts, réparation plafonnée, trois trajectoires simultanées et retour au tir simple après expiration.
 - Progression : seuils 4 999 / 5 000 et 14 999 / 15 000, refus du vaisseau verrouillé, record non cumulé entre parties, sauvegarde sur disque et rechargement dans un slot temporaire distinct de celui du joueur.
-- Menu et jeu inspectés sur les captures réelles : logo transparent, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test visuel reproduisait la disparition de 19 à 30 % des pixels lumineux lors du tir avec l’ancien flash ; après remplacement, la validation finale mesure au plus 0,3 % sur les trois vaisseaux (seuil de régression : 5 %).
+- Menu et jeu inspectés sur les captures réelles : logo animé, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test du tir mesure au plus 0,2 % de pixels lumineux noircis sur les trois vaisseaux (seuil : 5 %). Pour les deux effets d’astéroïde vérifiés près d’un rocher survivant, la mesure est de 0,0 % (seuil : 1 %), contre jusqu’à 2,4 % avec les anciens fragments opaques.
 - Build Windows lancé et menu/partie vérifiés ; les vérifications complètes des mécaniques sont réalisées dans l’éditeur.
-- Build complet : **368911733 octets**, soit **368.91 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
+- Build complet : **368918718 octets**, soit **368.92 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
 
 ## Gestion de versions et remise
 

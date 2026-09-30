@@ -14,10 +14,10 @@ Dans Unreal, ouvrir le Content Browser, puis **Content → Blueprints**. Double-
 | `BP_BonusShield` | Type Shield, sprite bleu, présence 12 s. |
 | `BP_BonusRepair` | Type Repair, sprite vert, présence 12 s. Restaure une vie, maximum trois. |
 | `BP_BonusTripleShot` | Type TripleShot, sprite orange, présence 12 s. |
-| `BP_RockCollision` | Son original, seize débris, anneau d’impact, durée 0,65 s et rayon d’expansion 125. Utilisé pour collision et destruction. |
+| `BP_RockCollision` | Son original, gerbe de poussière et d’étincelles additive, durée 0,65 s, rayon d’expansion 95, Fragment Count = 0. Utilisé pour collision et destruction. |
 | `BP_OrbitHUD` | Title Logo, Ship Portraits, Bonus Icons, auteur. Affiche les informations du GameMode et les HP actuels des astéroïdes. |
 | `BP_CollectDoubleScore / Shield / Repair / TripleShot` | Onde lumineuse additive à la collecte, couleur propre à chaque bonus, durée 0,55 s. |
-| `BP_MuzzleFlash` | Éclat additif transparent, durée 0,10 s ; Fragment Count = 0. Remplace les anciens cubes opaques responsables du rectangle au départ du tir. |
+| `BP_MuzzleFlash` | Éclat additif transparent, durée 0,10 s ; Fragment Count = 0. Sound Variants contient trois nouveaux sons de laser à impulsion. Un seul son par salve, même en tir triple. |
 
 ## Suivre un mécanisme dans le code
 
@@ -31,10 +31,12 @@ Les fonctions de jeu marquées `BlueprintCallable` et les valeurs `BlueprintRead
 
 ## Sources et reconstruction
 
-Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, et **en dernier `Tools/import_effects_content.py`** pour le logo, les bonus détourés et les nouveaux effets. Faire Check Out sur les assets existants avant de relancer un import.
+Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py` et `Tools/generate_laser_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, `Tools/import_effects_content.py` et **en dernier `Tools/import_combat_polish.py`**. Faire Check Out sur les assets existants avant de relancer un import.
 
 Chaque `BP_Bonus…` expose Aura Mesh, Aura Material et Collect Effect Class. Le matériau anime trois petites particules autour du symbole ; le composant Visual flotte doucement. Le bouclier de `BP_Ship` utilise `M_EnergyShield` : bord électrique, cellules hexagonales discrètes et centre transparent. `Strength` pilote son apparition et sa disparition ; `Impact` produit une impulsion lors du contact avec un astéroïde. Ces paramètres changent l’apparence, pas la durée de protection de dix secondes.
 
 Les validations automatiques se lancent avec `-OrbitTestMode` pour protéger la vraie sauvegarde. Le test `SpaceShooter.Gameplay.ArcadeSystems` utilise un slot temporaire distinct pour vérifier l’enregistrement sur disque et le supprime ensuite.
 
 Le test `SpaceShooter.Visual.Effects` compare les pixels de chaque vaisseau au repos et pendant une série de tirs. Il échoue si plus de 5 % de ses pixels lumineux deviennent noirs et conserve les captures dans `Saved/EffectsValidation`.
+
+Le test `SpaceShooter.Visual.AsteroidEffects` détruit un astéroïde près d’un autre, puis vérifie aussi l’effet de collision avec le vaisseau. Il exige que 99 % des pixels lumineux du rocher survivant restent visibles. Les astéroïdes utilisent désormais l’alpha complet de leur texture ; projectiles, poussière et étincelles sont additifs, sans fragment opaque. Le logo flotte de ±4 pixels, s’incline de moins d’un demi-degré et varie de moins de 1 % en taille ; ces animations sont dans `SpaceHUD::DrawHUD`.

@@ -37,7 +37,9 @@ void ACombatBurst::BeginPlay()
         WaveDynamic=UMaterialInstanceDynamic::Create(ShockwaveMaterial,this);
         Shockwave->SetMaterial(0,WaveDynamic);
     }
-    if (Sound) UGameplayStatics::PlaySound2D(this, Sound, .28f, FMath::FRandRange(.92f,1.08f));
+    USoundBase* SelectedSound=SoundVariants.IsEmpty()?Sound.Get():SoundVariants[FMath::RandHelper(SoundVariants.Num())].Get();
+    if (SelectedSound) UGameplayStatics::PlaySound2D(this, SelectedSound, .28f,
+        SoundVariants.IsEmpty()?FMath::FRandRange(.92f,1.08f):FMath::FRandRange(.98f,1.02f));
     for (int32 Index=0;Index<Fragments.Num();++Index)
     {
         auto* Fragment=Fragments[Index].Get();

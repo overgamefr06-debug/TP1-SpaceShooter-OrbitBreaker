@@ -19,6 +19,8 @@ AShotProjectile::AShotProjectile()
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(Collision);
     Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Mesh->SetCastShadow(false);
+    Mesh->bUseAsOccluder=false;
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
     Mesh->SetStaticMesh(Cube.Object);
     Mesh->SetRelativeScale3D(FVector(.32f, .075f, .075f));
