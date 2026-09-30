@@ -76,20 +76,20 @@ L’ancien flash de tir composé de cubes provoquait un rectangle noir devant le
 
 La correction couvre aussi les astéroïdes : textures avec alpha complet, laser additif et explosions de poussière/étincelles sans primitives opaques. Un second test visuel contrôle qu’une destruction proche ne noircit pas le rocher survivant. Le logo du menu flotte doucement et s’incline légèrement. Le laser joue aléatoirement l’un de trois nouveaux sons à impulsion, plus courts et graves, synthétisés sans échantillon externe : [sources audio](ArtSources/Effects/LaserAudio.md).
 
-Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débris sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes et l’emblème restent dans les sources historiques mais ne composent plus le décor ou le HUD actuel. Les polices et primitives de base proviennent d’Unreal. Aucun pack externe n’est requis.
+Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débris sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes et l’emblème restent dans les sources historiques mais ne composent plus le décor ou le HUD actuel. Les polices et primitives de base proviennent d’Unreal. Aucun pack supplémentaire n’est nécessaire pour jouer. Les nouvelles compositions orchestrales utilisent les samples CC0 de Versilian Studios / Sam Gossner (VSCO 2 CE), dont la licence, les références et les empreintes sont conservées dans ArtSources/Soundtrack.
 
 Références de lisibilité étudiées : [Super Stardust HD](https://housemarque.com/games/sshd) et [Nova Drift](https://store.steampowered.com/app/858210/Nova_Drift/). Aucun asset de ces jeux n’a été copié.
 
 Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade, l’import des effets puis `Tools/import_combat_polish.py`, après `Tools/generate_laser_audio.py`, et enfin **`Tools/import_soundtrack.py`**, après `Tools/generate_soundtrack.py`. Les scripts précédents rétablissent l’apparence de leurs jalons.
 
-Deux musiques originales accompagnent le jeu : **Quiet Orbit**, ambiance spatiale calme de 45,7 s à 84 BPM, et **Breaker Run**, boucle électronique de 64 s à 120 BPM. Elles se fondent entre menu et partie ; le bilan retrouve la musique du menu. Rejouer en cours de partie ne coupe pas la boucle. Quatre sons courts accompagnent survol, choix du vaisseau, validation et retour, avec les mêmes confirmations au clavier. Sources, composition et réglages : [bande-son originale](ArtSources/Soundtrack/Composition.md).
+Les deux musiques ont été entièrement recomposées dans une direction **orchestrale cinématique** : **Quiet Orbit**, 50,5 s à 76 BPM, avec cordes et cors ; **Breaker Run**, 60 s à 128 BPM, avec ostinatos, cuivres et percussions épiques. Elles se fondent entre menu et partie ; le bilan retrouve la musique du menu. Rejouer en cours de partie ne coupe pas la boucle. Quatre clics courts et feutrés remplacent les anciennes petites mélodies des boutons : survol, sélection, validation et retour, également au clavier. Sources, composition et réglages : [bande-son originale](ArtSources/Soundtrack/Composition.md).
 
 Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éditeur et sont exclus de la cible du jeu. MCP peut être démarré avec `ModelContextProtocol.StartServer 8000`; adresse locale `http://127.0.0.1:8000/mcp`. Il ne démarre pas automatiquement dans le build Windows.
 
 ## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Windows Shipping réussis.
-- Quatre tests de gameplay, deux tests visuels, un test des transitions audio et l’enregistrement de démonstration passent : **8 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/SoundtrackFinal/index.json`.
+- Quatre tests de gameplay, deux tests visuels, un test des transitions audio et l’enregistrement de démonstration passent : **8 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/OrchestralValidation/index.json`.
 - Audio : deux SoundWave en boucle et quatre confirmations non bouclées ; passage menu/partie/bilan, relance et inversions rapides de fondu vérifiés, sans lecteur restant actif après sa sortie.
 - Combat : commandes de tir, cadence, impact unique, expiration, projectiles rapides, résistances 1/2/3 et scores 100/200/400.
 - Commandes et partie : déplacements, limites, apparitions aléatoires, impulsion physique, collisions, protection après dégâts, fin, redémarrage et retour au menu.
@@ -98,7 +98,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Progression : seuils 4 999 / 5 000 et 14 999 / 15 000, refus du vaisseau verrouillé, record non cumulé entre parties, sauvegarde sur disque et rechargement dans un slot temporaire distinct de celui du joueur.
 - Menu et jeu inspectés sur les captures réelles : logo animé, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test du tir mesure au plus 0,2 % de pixels lumineux noircis sur les trois vaisseaux (seuil : 5 %). Pour les deux effets d’astéroïde vérifiés près d’un rocher survivant, la mesure est de 0,0 % (seuil : 1 %), contre jusqu’à 2,4 % avec les anciens fragments opaques.
 - Build Windows lancé et menu/partie vérifiés ; les vérifications complètes des mécaniques sont réalisées dans l’éditeur.
-- Build complet : **371768603 octets**, soit **371,77 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
+- Build complet : **372280675 octets**, soit **372,28 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
 
 ## Gestion de versions et remise
 

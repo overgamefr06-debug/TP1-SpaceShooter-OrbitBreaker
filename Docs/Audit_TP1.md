@@ -37,7 +37,7 @@ Le build autonome complet doit rester sous 500 000 000 octets et se trouver dans
 
 Les trois pièces obligatoires sont `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`. La vidéo est une capture du véritable viewport Unreal ; quatre bonus et une paire d'astéroïdes y sont mis en scène pour démontrer les mécaniques, sans modifier la progression réelle du joueur.
 
-Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, compilation et packaging Shipping réussis. Build : **371 768 603 octets (371,77 Mo)**, 26 fichiers comparés par empreinte avec la sortie du packaging. La synchronisation des branches et streams est vérifiée au moment de publier ce jalon. Les rapports détaillés restent en local dans Artifacts, conformément aux exclusions.
+Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, compilation et packaging Shipping réussis. Build : **372 280 675 octets (372,28 Mo)**, 26 fichiers comparés par empreinte avec la sortie du packaging. La synchronisation des branches et streams est vérifiée au moment de publier ce jalon. Les rapports détaillés restent en local dans Artifacts, conformément aux exclusions.
 
 ## Ce qu'il reste à faire pour remettre
 
