@@ -17,8 +17,6 @@
 namespace FleetUI
 {
     const TCHAR* Names[] = {TEXT("AEGIS"),TEXT("SPECTRE"),TEXT("HELIOS")};
-    const TCHAR* Roles[] = {TEXT("INTERCEPTEUR"),TEXT("CHASSEUR FURTIF"),TEXT("CANONNIÈRE")};
-    const FLinearColor Colors[] = {FLinearColor(.22f,.84f,1.f),FLinearColor(.72f,.38f,1.f),FLinearColor(1.f,.56f,.22f)};
 }
 
 ASpaceHUD::ASpaceHUD()
@@ -57,17 +55,6 @@ bool ASpaceHUD::Hover(float X,float Y,float W,float H) const
     if (!GetOwningPlayerController()->GetMousePosition(MX,MY)) return false;
     MX=(MX-OffsetX)/Scale; MY=(MY-OffsetY)/Scale;
     return MX>=X && MX<=X+W && MY>=Y && MY<=Y+H;
-}
-
-void ASpaceHUD::Frame(float X,float Y,float W,float H,FLinearColor Color,bool Active)
-{
-    Panel(X,Y,W,H,FLinearColor(.008f,.018f,.033f,Active?.94f:.8f));
-    Panel(X+1,Y+1,W-2,H*.38f,FLinearColor(.025f,.048f,.075f,.35f));
-    const FLinearColor Edge(Color.R,Color.G,Color.B,Active?.8f:.25f);
-    Line(X,Y,X+W-14,Y,Edge); Line(X+W-14,Y,X+W,Y+14,Edge);
-    Line(X+W,Y+14,X+W,Y+H,Edge); Line(X+W,Y+H,X+14,Y+H,Edge);
-    Line(X+14,Y+H,X,Y+H-14,Edge); Line(X,Y+H-14,X,Y,Edge);
-    Line(X+12,Y+1,X+58,Y+1,Color,Active?3:1);
 }
 
 void ASpaceHUD::Button(FName Name,const FString& Text,float X,float Y,bool bPrimary)

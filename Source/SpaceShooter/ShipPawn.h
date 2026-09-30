@@ -25,8 +25,6 @@ public:
     TObjectPtr<UBoxComponent> Collision;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
     TObjectPtr<UStaticMeshComponent> Hull;
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components")
-    TObjectPtr<UStaticMeshComponent> Wings;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components") TObjectPtr<UStaticMeshComponent> EngineGlow;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ship|Components") TObjectPtr<UStaticMeshComponent> ShieldGlow;
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ship|Effects") TObjectPtr<UStaticMesh> ShieldMesh;

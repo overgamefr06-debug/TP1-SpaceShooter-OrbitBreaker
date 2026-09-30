@@ -40,7 +40,6 @@ public:
     void ConsumeForFragmentation();
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Effects")
     TSubclassOf<ACombatBurst> DestructionEffectClass;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Asteroid|Art") TArray<TObjectPtr<UStaticMesh>> MeshVariants;
 protected:
     virtual void BeginPlay() override;
 private:

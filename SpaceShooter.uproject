@@ -1,10 +1,11 @@
 {
   "FileVersion": 3,
-  "EngineAssociation": "5.8",
+  "EngineAssociation": "{CEECEE46-45CE-5926-AF04-158F6F52E3A4}",
   "Category": "Games",
   "Description": "TP1 - Space Shooter",
   "Modules": [{"Name": "SpaceShooter", "Type": "Runtime", "LoadingPhase": "Default"}],
   "Plugins": [
+    {"Name": "AndroidFileServer", "Enabled": false},
     {"Name": "EnhancedInput", "Enabled": true},
     {"Name": "ModelContextProtocol", "Enabled": true, "TargetAllowList": ["Editor"]},
     {"Name": "EditorToolset", "Enabled": true, "TargetAllowList": ["Editor"]},

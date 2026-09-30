@@ -10,7 +10,7 @@ tools=unreal.AssetToolsHelpers.get_asset_tools()
 root='/Game/Art/Fleet'
 source=Path(__file__).resolve().parents[1]/'ArtSources'/'Fleet'
 textures=[]
-for name in ['Aegis','Spectre','Helios','ScoreEmblem']:
+for name in ['Aegis','Spectre','Helios']:
     path=root+'/T_'+name
     if not lib.does_asset_exist(path):
         task=unreal.AssetImportTask()
@@ -72,14 +72,13 @@ def save(bp):
 bp,o=defaults('BP_Ship')
 h=o.get_editor_property('hull'); h.set_static_mesh(mesh); h.set_material(0,materials[0])
 h.set_relative_rotation(unreal.Rotator(0,0,0),False,False)
-h.set_relative_scale3d(unreal.Vector(1,1,1))
-o.get_editor_property('wings').set_static_mesh(None)
-o.get_editor_property('engine_glow').set_relative_location(unreal.Vector(-34,0,-2),False,False)
+h.set_relative_scale3d(unreal.Vector(.68,.68,.68))
+o.get_editor_property('engine_glow').set_relative_location(unreal.Vector(-23,0,-2),False,False)
 o.set_editor_property('ship_materials',materials)
-o.set_editor_property('muzzle_offset',81.)
+o.set_editor_property('muzzle_offset',56.)
 save(bp)
 bp,o=defaults('BP_OrbitHUD')
-o.set_editor_property('ship_portraits',textures[:3]); o.set_editor_property('score_emblem',textures[3]); save(bp)
+o.set_editor_property('ship_portraits',textures[:3]); save(bp)
 bp,o=defaults('BP_Asteroid')
 o.set_editor_property('random_size',True)
 o.set_editor_property('size_scales',unreal.Vector(.55,.95,1.45))

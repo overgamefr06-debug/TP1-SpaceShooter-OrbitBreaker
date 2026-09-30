@@ -94,7 +94,6 @@ v.set_editor_property('translucency_sort_priority',2)
 save(b)
 for name in ['BP_RockCollision','BP_AsteroidBurst']:
     b,o=bp(name)
-    o.set_editor_property('fragment_count',0)
     o.set_editor_property('shockwave_mesh',mesh)
     o.set_editor_property('shockwave_material',burst)
     o.set_editor_property('expansion_radius',95.)

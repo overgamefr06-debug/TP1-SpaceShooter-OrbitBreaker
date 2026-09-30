@@ -1,6 +1,6 @@
 # Sources des assets de la flotte
 
-Créés le 30 septembre 2026 avec l’outil intégré imagegen. Sprites PNG transparents importés sans retouche, matériaux masqués non éclairés sur un plan orienté vers la caméra. Ce sont des images prérendues, pas des modèles 3D volumétriques. L’emblème est utilisé pour le score ; les portraits servent aussi aux vies et à la sélection. Même vitesse et armement pour les trois vaisseaux.
+Créés le 30 septembre 2026 avec l’outil intégré imagegen. Sprites PNG transparents importés sans retouche, matériaux masqués non éclairés sur un plan orienté vers la caméra. Ce sont des images prérendues, pas des modèles 3D volumétriques. Les portraits servent aussi aux vies et à la sélection. Même vitesse et armement pour les trois vaisseaux.
 
 ## Aegis
 
@@ -14,6 +14,4 @@ Use case: stylized-concept. Production game asset for Unreal top-down space shoo
 
 Use case: stylized-concept. Production game asset for Unreal top-down space shooter. One single Helios spacecraft, warm ivory and burnt orange armour over dark gunmetal, amber glass cockpit, broad heavy gunship silhouette, bulky paired turbines, central short pointed nose, rugged military industrial design. High-end pre-rendered 3D sprite: finely beveled panels, convincing metallic roughness, vents, recessed seams, restrained wear, layered mechanical structures, crisp luminous cockpit, strong readable silhouette. Camera EXACT orthographic overhead dorsal view, bilateral symmetry, nose points straight UP at top edge, engines down. Entire craft centered occupying 80% of square canvas, generous transparent margins. Actual transparent background alpha; no backdrop, no drop shadow outside hull, no stars, no floor, no text, no frame, no watermark, no exhaust trail. Balanced studio light from upper left, no harsh white clipping. Beautiful polished sci-fi game art, not a flat polygon icon. 1024 square.
 
-## Score
-
-Use case: stylized-concept. Single production UI icon for a premium sci-fi space shooter, a small platinum orbital insignia: faceted titanium asteroid crystal centered inside a broken brushed silver circular orbit, cyan illuminated edge details and a tiny warm gold inset. Viewed front on, centered, balanced polished 3D rendered game HUD reward emblem, crisp bevels and readable silhouette at 48px. Actual transparent alpha background, no backdrop, no text, no numbers, no frame, no shadows outside the icon. Square 1024px. One isolated emblem occupying 75% of canvas.
+L’ancien emblème de score inutilisé a été retiré lors du nettoyage final ; sa source et son prompt restent dans l’historique Git/Perforce.

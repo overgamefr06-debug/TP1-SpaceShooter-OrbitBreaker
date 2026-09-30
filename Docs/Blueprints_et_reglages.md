@@ -14,10 +14,10 @@ Dans Unreal, ouvrir le Content Browser, puis **Content → Blueprints**. Double-
 | `BP_BonusShield` | Type Shield, sprite bleu, présence 12 s. |
 | `BP_BonusRepair` | Type Repair, sprite vert, présence 12 s. Restaure une vie, maximum trois. |
 | `BP_BonusTripleShot` | Type TripleShot, sprite orange, présence 12 s. |
-| `BP_RockCollision` | Son original, gerbe de poussière et d’étincelles additive, durée 0,65 s, rayon d’expansion 95, Fragment Count = 0. Utilisé pour collision et destruction. |
+| `BP_RockCollision` | Son original, gerbe de poussière et d’étincelles additive, durée 0,65 s, rayon d’expansion 95. Utilisé pour collision et destruction. |
 | `BP_OrbitHUD` | Title Logo, Ship Portraits, Bonus Icons, auteur. Affiche les informations du GameMode et les HP actuels des astéroïdes. |
 | `BP_CollectDoubleScore / Shield / Repair / TripleShot` | Onde lumineuse additive à la collecte, couleur propre à chaque bonus, durée 0,55 s. |
-| `BP_MuzzleFlash` | Éclat additif transparent, durée 0,10 s ; Fragment Count = 0. Sound Variants contient trois nouveaux sons de laser à impulsion. Un seul son par salve, même en tir triple. |
+| `BP_MuzzleFlash` | Éclat additif transparent, durée 0,10 s. Sound Variants contient trois nouveaux sons de laser à impulsion. Un seul son par salve, même en tir triple. |
 
 ## Suivre un mécanisme dans le code
 
@@ -31,7 +31,7 @@ Les fonctions de jeu marquées `BlueprintCallable` et les valeurs `BlueprintRead
 
 ## Sources et reconstruction
 
-Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py` et `Tools/generate_laser_audio.py`. Exécuter les anciens imports de contenu puis de flotte, ensuite `Tools/import_arcade_content.py`, `Tools/import_effects_content.py` et `Tools/import_combat_polish.py` puis **en dernier `Tools/import_soundtrack.py`**. Faire Check Out sur les assets existants avant de relancer un import.
+Art source : `ArtSources/Arcade` et `ArtSources/Effects`, sons originaux : `Tools/generate_arcade_audio.py` et `Tools/generate_laser_audio.py`. Les assets livrés sont déjà configurés. Pour réimporter leurs sources sur ce projet, exécuter Tools/create_exhaust_mesh.py puis Tools/import_fleet_art.py, ensuite `Tools/import_arcade_content.py`, `Tools/import_effects_content.py` et `Tools/import_combat_polish.py` puis **en dernier `Tools/import_soundtrack.py`**. Faire Check Out sur les assets existants avant de relancer un import.
 
 Chaque `BP_Bonus…` expose Aura Mesh, Aura Material et Collect Effect Class. Le matériau anime trois petites particules autour du symbole ; le composant Visual flotte doucement. Le bouclier de `BP_Ship` utilise `M_EnergyShield` : bord électrique, cellules hexagonales discrètes et centre transparent. `Strength` pilote son apparition et sa disparition ; `Impact` produit une impulsion lors du contact avec un astéroïde. Ces paramètres changent l’apparence, pas la durée de protection de dix secondes.
 

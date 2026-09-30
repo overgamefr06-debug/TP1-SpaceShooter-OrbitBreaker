@@ -54,7 +54,7 @@ Les types peuvent se combiner. Reprendre un bonus renouvelle sa durée sans cumu
 | ShotProjectile | BP_Projectile | Mouvement balayé, impact unique, vitesse et durée de vie |
 | SpaceAsteroid | BP_Asteroid | Trois catégories : taille, résistance et points liés; impulsion physique, rotation, deux textures de roche et fragmentation |
 | SpaceGameMode | BP_SpaceGameMode | Menu/partie/fin, record sauvegardé, déblocages, bonus, score et vies ; apparitions, musiques et sons des boutons |
-| CombatBurst | BP_MuzzleFlash / BP_AsteroidBurst / BP_RockCollision | Fragments animés, anneau de collision, durée, couleur et sons |
+| CombatBurst | BP_MuzzleFlash / BP_AsteroidBurst / BP_RockCollision | Ondes additives animées, poussière, durée et sons |
 | SpaceHUD | BP_OrbitHUD | Interface Canvas sobre, choix et verrouillage des vaisseaux, vies, HP et bonus actifs |
 | SpacePickup | BP_BonusDoubleScore / BP_BonusShield / BP_BonusRepair / BP_BonusTripleShot | Collecte unique, sprite, type, son et durée de présence |
 
@@ -66,21 +66,21 @@ L’interface est dessinée en C++ avec mise à l’échelle : menu centré sans
 
 ## Assets originaux
 
-Les trois nouveaux vaisseaux **Aegis**, **Spectre** et **Helios**, ainsi que l’emblème de score, sont des PNG transparents détaillés créés pour le projet avec l’outil intégré imagegen. Les sources et les prompts complets sont dans `ArtSources/Fleet/Generation.md`. Ce sont des sprites prérendus appliqués sur un plan en jeu, et non des modèles 3D volumétriques. Les matériaux, textures et le plan sont dans `Content/Art/Fleet` ; `Tools/import_fleet_art.py` réalise leur import et configure les Blueprints. Les mêmes images servent aux portraits du menu et aux vies.
+Les trois nouveaux vaisseaux **Aegis**, **Spectre** et **Helios** sont des PNG transparents détaillés créés pour le projet avec l’outil intégré imagegen. Les sources et les prompts complets sont dans `ArtSources/Fleet/Generation.md`. Ce sont des sprites prérendus appliqués sur un plan en jeu, et non des modèles 3D volumétriques. Les matériaux, textures et le plan sont dans `Content/Art/Fleet` ; `Tools/import_fleet_art.py` réalise leur import et configure les Blueprints. Les mêmes images servent aux portraits du menu et aux vies.
 
 Les astéroïdes actuels utilisent **deux nouveaux sprites rocheux transparents** générés pour le projet, sans cristaux ni facettes géométriques artificielles. Sources et prompts : `ArtSources/Arcade/Generation.md` ; import : `Tools/import_arcade_content.py`.
 
 Le logo **Orbit Breaker** argent/orange remplace le titre texte du menu. Les quatre bonus sont des symboles détourés sans tuile de fond : ×2 doré, bouclier bleu, cristal de réparation vert et trois lasers orange. Sources PNG RGBA originales et prompts imagegen : [ArtSources/Effects/Generation.md](ArtSources/Effects/Generation.md). Ils flottent avec des particules orbitales et déclenchent une onde colorée à la collecte. Le bouclier est une enveloppe électrique animée, avec cellules hexagonales discrètes, apparition progressive, impulsion d’impact et disparition en fin de protection. Les matériaux et animations sont natifs à Unreal, configurés par les Blueprints.
 
-L’ancien flash de tir composé de cubes provoquait un rectangle noir devant le vaisseau. Il est remplacé par un éclat additif transparent ; les composants de fragments démarrent également avec une taille minimale avant leur initialisation. Un test visuel dédié compare les trois vaisseaux avant et pendant le tir pour détecter toute nouvelle disparition de pixels.
+L’ancien flash de tir composé de cubes provoquait un rectangle noir devant le vaisseau. Il est remplacé par un éclat additif transparent ; les anciens composants de cubes inutilisés ont été supprimés. Un test visuel dédié compare les trois vaisseaux avant et pendant le tir pour détecter toute nouvelle disparition de pixels.
 
 La correction couvre aussi les astéroïdes : textures avec alpha complet, laser additif et explosions de poussière/étincelles sans primitives opaques. Un second test visuel contrôle qu’une destruction proche ne noircit pas le rocher survivant. Le logo du menu flotte doucement et s’incline légèrement. Le laser joue aléatoirement l’un de trois nouveaux sons à impulsion, plus courts et graves, synthétisés sans échantillon externe : [sources audio](ArtSources/Effects/LaserAudio.md).
 
-Le son de collision (0,95 s), le son de collecte (0,38 s) et l’anneau de débris sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes et l’emblème restent dans les sources historiques mais ne composent plus le décor ou le HUD actuel. Les polices et primitives de base proviennent d’Unreal. Aucun pack supplémentaire n’est nécessaire pour jouer. Les nouvelles compositions orchestrales utilisent les samples CC0 de Versilian Studios / Sam Gossner (VSCO 2 CE), dont la licence, les références et les empreintes sont conservées dans ArtSources/Soundtrack.
+Le son de collision (0,95 s), le son de collecte (0,38 s) et l’effet de poussière sont originaux. Les sons sont synthétisés par `Tools/generate_arcade_audio.py`. La nébuleuse et les anciens sons proviennent des outils procéduraux du projet ; sa luminosité est réduite par un nouveau matériau. Les anciens meshes, matériaux et emblème inutilisés ont été retirés du projet actif ; ils restent accessibles dans les historiques Git/Perforce. Les polices et primitives de base proviennent d’Unreal. Aucun pack supplémentaire n’est nécessaire pour jouer. Les nouvelles compositions orchestrales utilisent les samples CC0 de Versilian Studios / Sam Gossner (VSCO 2 CE), dont la licence, les références et les empreintes sont conservées dans ArtSources/Soundtrack.
 
 Références de lisibilité étudiées : [Super Stardust HD](https://housemarque.com/games/sshd) et [Nova Drift](https://store.steampowered.com/app/858210/Nova_Drift/). Aucun asset de ces jeux n’a été copié.
 
-Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre le contenu historique, l’import de flotte, l’import arcade, l’import des effets puis `Tools/import_combat_polish.py`, après `Tools/generate_laser_audio.py`, et enfin **`Tools/import_soundtrack.py`**, après `Tools/generate_soundtrack.py`. Les scripts précédents rétablissent l’apparence de leurs jalons.
+Avant de relancer un outil de génération, faire Check Out sur ses assets existants. Pour reconstruire les assets depuis leurs sources, exécuter dans l’ordre Tools/create_exhaust_mesh.py, l’import de flotte, l’import arcade, l’import des effets puis `Tools/import_combat_polish.py`, après `Tools/generate_laser_audio.py`, et enfin **`Tools/import_soundtrack.py`**, après `Tools/generate_soundtrack.py`. Ces outils réimportent les sources sur les Blueprints déjà livrés ; les anciens scripts de prototype ont été retirés.
 
 Les deux musiques ont été entièrement recomposées dans une direction **orchestrale cinématique** : **Quiet Orbit**, 50,5 s à 76 BPM, avec cordes et cors ; **Breaker Run**, 60 s à 128 BPM, avec ostinatos, cuivres et percussions épiques. Elles se fondent entre menu et partie ; le bilan retrouve la musique du menu. Rejouer en cours de partie ne coupe pas la boucle. Quatre clics courts et feutrés remplacent les anciennes petites mélodies des boutons : survol, sélection, validation et retour, également au clavier. Sources, composition et réglages : [bande-son originale](ArtSources/Soundtrack/Composition.md).
 
@@ -89,7 +89,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 ## Validation — 30 septembre 2026
 
 - Compilation Editor et packaging Windows Shipping réussis.
-- Quatre tests de gameplay, deux tests visuels, un test des transitions audio et l’enregistrement de démonstration passent : **8 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/OrchestralValidation/index.json`.
+- Quatre tests de gameplay, deux tests visuels, un test des transitions audio et l’enregistrement de démonstration passent : **8 réussites, 0 échec, 0 avertissement de test**. Rapport local : `Artifacts/CleanupValidation/index.json`.
 - Audio : deux SoundWave en boucle et quatre confirmations non bouclées ; passage menu/partie/bilan, relance et inversions rapides de fondu vérifiés, sans lecteur restant actif après sa sortie.
 - Combat : commandes de tir, cadence, impact unique, expiration, projectiles rapides, résistances 1/2/3 et scores 100/200/400.
 - Commandes et partie : déplacements, limites, apparitions aléatoires, impulsion physique, collisions, protection après dégâts, fin, redémarrage et retour au menu.
@@ -98,7 +98,7 @@ Les plugins Geometry Scripting, EditorToolset et MCP servent uniquement à l'éd
 - Progression : seuils 4 999 / 5 000 et 14 999 / 15 000, refus du vaisseau verrouillé, record non cumulé entre parties, sauvegarde sur disque et rechargement dans un slot temporaire distinct de celui du joueur.
 - Menu et jeu inspectés sur les captures réelles : logo animé, bonus détourés avec particules, bouclier électrique à cellules hexagonales, rochers, HP et tirs triples. Le test du tir mesure au plus 0,2 % de pixels lumineux noircis sur les trois vaisseaux (seuil : 5 %). Pour les deux effets d’astéroïde vérifiés près d’un rocher survivant, la mesure est de 0,0 % (seuil : 1 %), contre jusqu’à 2,4 % avec les anciens fragments opaques.
 - Build Windows lancé et menu/partie vérifiés ; les vérifications complètes des mécaniques sont réalisées dans l’éditeur.
-- Build complet : **372280675 octets**, soit **372,28 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
+- Build complet : **371653399 octets**, soit **371,65 Mo**, sous 500 Mo. Les 26 fichiers du build sont comparés par empreinte avec la sortie du packaging avant intégration dans Perforce main.
 
 ## Gestion de versions et remise
 
@@ -121,3 +121,11 @@ Les fichiers générés, les paramètres de connexion locaux, les notes et les t
 Avant de remettre ou présenter le travail, rejouer une partie et relire `Docs/Conflits_revision_control.md` ainsi que les classes C++ pour pouvoir expliquer les choix techniques.
 
 Audit détaillé de chaque ligne du barème et étapes administratives restantes : [Docs/Audit_TP1.md](Docs/Audit_TP1.md). La date de remise du PDF et les éventuelles modalités Moodle restent à confirmer ; la présence des fichiers dans les dépôts ne prouve pas une remise administrative.
+
+## Nettoyage final et ouverture
+
+Ouvrir `SpaceShooter.uproject` avec Unreal Engine 5.8.3. L’association du projet utilise l’identifiant de l’installation locale enregistrée ; sur un autre poste, choisir son installation UE 5.8 si Unreal la demande. Le module Android File Server inutilisé est désactivé explicitement.
+
+29 assets inutilisés ont été retirés après analyse des dépendances depuis la carte et le GameMode, ainsi que quatre anciens acteurs de bordure cachés, les sources visuelles abandonnées et trois scripts de prototype. Les 16 composants de fragments invisibles créés par chaque effet ont été supprimés ; les ondes additives actuelles sont conservées. 65 assets restent, tous reliés au jeu, sans dépendance de projet manquante. `Tools/validate_project_assets.py` refait ce contrôle en lecture seule dans Unreal et écrit `Artifacts/AssetValidation.json`.
+
+Les outils actuels ont été exécutés après nettoyage ; les Blueprints ont été recompilés et sauvegardés. Les sources C++, les Blueprints, les sources artistiques actives, leurs licences, les preuves de conflits, le build et la vidéo restent présents. Les caches de compilation/packaging sont régénérables et exclus du versionnement.

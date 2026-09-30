@@ -13,3 +13,8 @@
 .p4config
 
 /Build/Windows/FileOpenOrder/
+
+*.slnx
+.vsconfig
+__pycache__/
+*.pyc

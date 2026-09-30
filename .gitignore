@@ -13,3 +13,8 @@
 /Artifacts/
 
 /.p4config
+
+*.slnx
+.vsconfig
+__pycache__/
+*.pyc

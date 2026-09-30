@@ -31,11 +31,6 @@ AShipPawn::AShipPawn()
     Hull->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Hull->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
     Hull->SetRelativeScale3D(FVector(.4f, .4f, .85f));
-    Wings = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
-    Wings->SetupAttachment(Collision);
-    Wings->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    Wings->SetRelativeLocation(FVector(-15.f, 0.f, 0.f));
-    Wings->SetRelativeScale3D(FVector(.25f, .9f, .12f));
     EngineGlow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EngineGlow"));
     EngineGlow->SetupAttachment(Collision);
     EngineGlow->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -45,9 +40,7 @@ AShipPawn::AShipPawn()
     ShieldGlow->SetCastShadow(false);
     ShieldGlow->SetRelativeLocation(FVector(0,0,8));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> Cone(TEXT("/Engine/BasicShapes/Cone.Cone"));
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
     Hull->SetStaticMesh(Cone.Object);
-    Wings->SetStaticMesh(Cube.Object);
     Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
     AddTickPrerequisiteComponent(Movement);
     Movement->SetPlaneConstraintEnabled(true);
@@ -211,7 +204,6 @@ void AShipPawn::Tick(float DeltaSeconds)
     }
     const bool bBlink = Mode && Mode->IsPlaying() && Mode->IsInvulnerable() && Mode->BonusSeconds(ESpaceBonus::Shield)<=0 && FMath::Fmod(GetWorld()->GetTimeSeconds(), .16f) < .07f;
     Hull->SetVisibility(!bBlink);
-    Wings->SetVisibility(!bBlink);
     EngineGlow->SetVisibility(!bBlink);
     const float ShieldSeconds=Mode && Mode->IsPlaying()?Mode->BonusSeconds(ESpaceBonus::Shield):0.f;
     const float Target=FMath::Clamp(ShieldSeconds/.45f,0.f,1.f);

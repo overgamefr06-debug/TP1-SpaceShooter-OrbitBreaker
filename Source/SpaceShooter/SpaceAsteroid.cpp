@@ -48,12 +48,6 @@ void ASpaceAsteroid::BeginPlay()
     SetActorScale3D(FVector(FMath::Max(.1, SizeScales[Tier])));
     Spin = FMath::FRandRange(-24.f, 24.f);
     if(!RockMaterials.IsEmpty()) Mesh->SetMaterial(0,RockMaterials[FMath::RandHelper(RockMaterials.Num())]);
-    if (!MeshVariants.IsEmpty())
-    {
-        Mesh->SetStaticMesh(MeshVariants[FMath::RandHelper(MeshVariants.Num())]);
-        Mesh->SetRelativeScale3D(FVector::OneVector);
-        Mesh->SetRelativeRotation(FRotator(0,FMath::FRandRange(0.f,360.f),0));
-    }
 }
 
 void ASpaceAsteroid::Launch(FVector Velocity)

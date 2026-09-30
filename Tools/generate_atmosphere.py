@@ -3,7 +3,7 @@ The generated sources are original to this project; no third-party media is used
 """
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 import wave
 
 out=Path(__file__).resolve().parents[1]/'ArtSources'
@@ -34,18 +34,13 @@ for i in range(9):
     d.ellipse((xx-1,yy-1,xx+1,yy+1),fill=(170,210,230))
 img.save(out/'T_OrbitNebula.png')
 
-def sound(name,duration,kind):
+def sound(name,duration):
     rate=22050; t=np.arange(int(rate*duration))/rate
-    if kind=='shot':
-        phase=2*np.pi*(1150*t-3000*t*t)
-        signal=(np.sin(phase)*.6+np.sin(phase*1.9)*.15)*np.exp(-t*30)
-    else:
-        n=rng.uniform(-1,1,len(t)); n=np.convolve(n,np.ones(9)/9,mode='same')
-        signal=(n*.8+np.sin(2*np.pi*(100*t-65*t*t))*.25)*np.exp(-t*6)
+    n=rng.uniform(-1,1,len(t)); n=np.convolve(n,np.ones(9)/9,mode='same')
+    signal=(n*.8+np.sin(2*np.pi*(100*t-65*t*t))*.25)*np.exp(-t*6)
     signal*=np.minimum(t/.006,1)
     with wave.open(str(out/name),'wb') as f:
         f.setnchannels(1); f.setsampwidth(2); f.setframerate(rate)
         f.writeframes((np.clip(signal,-1,1)*28000).astype('<i2').tobytes())
-sound('S_Laser.wav',.16,'shot')
-sound('S_Impact.wav',.65,'impact')
+sound('S_Impact.wav',.65)
 print('Original atmosphere and sounds created:',out)

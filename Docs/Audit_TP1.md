@@ -37,7 +37,7 @@ Le build autonome complet doit rester sous 500 000 000 octets et se trouver dans
 
 Les trois pièces obligatoires sont `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`. La vidéo est une capture du véritable viewport Unreal ; quatre bonus et une paire d'astéroïdes y sont mis en scène pour démontrer les mécaniques, sans modifier la progression réelle du joueur.
 
-Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, compilation et packaging Shipping réussis. Build : **372 280 675 octets (372,28 Mo)**, 26 fichiers comparés par empreinte avec la sortie du packaging. La synchronisation des branches et streams est vérifiée au moment de publier ce jalon. Les rapports détaillés restent en local dans Artifacts, conformément aux exclusions.
+Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, compilation et packaging Shipping réussis. Build : **371 653 399 octets (371,65 Mo)**, 26 fichiers comparés par empreinte avec la sortie du packaging. La synchronisation des branches et streams est vérifiée au moment de publier ce jalon. Les rapports détaillés restent en local dans Artifacts, conformément aux exclusions.
 
 ## Ce qu'il reste à faire pour remettre
 
@@ -48,3 +48,19 @@ Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, com
 La résistance 1/2/3 est liée à la taille aléatoire, et non à un second tirage indépendant pour chaque astéroïde de même taille. C'est le comportement explicitement demandé pour ce jeu ; cette précision permet de le présenter honnêtement au professeur.
 
 Le document indique « Valeur : 25 pt » en première page mais « TOTAL /30 » au barème. L'audit ne tente pas de convertir ni de garantir une note.
+
+## Contrôles du nettoyage final
+
+- Compilation Editor et packaging Shipping refaits après les suppressions ; build autonome lancé, menu Jouer/Quitter, partie, tir, redémarrage, retour au menu et fermeture vérifiés.
+- 29 assets orphelins supprimés ; 65 assets actifs, aucune dépendance /Game manquante. Les références C++/Config ont aussi été recherchées pour ne pas se limiter aux références de l’Asset Registry. Aucun chargement dynamique d’un asset supprimé n’a été trouvé.
+- 16 composants de fragments invisibles par effet, composant Wings vide, anciens réglages et fonction HUD inutilisés retirés. Les Blueprints recompilés restent les points de paramétrage du jeu.
+- Quatre acteurs de bordure cachés retirés de L_Arena ; aucune modification des règles de jeu demandées.
+- Trois scripts de prototype remplacés par les seuls imports actifs ; réimportation complète exécutée avec succès. Tous les scripts Python conservés passent l’analyse syntaxique.
+- Exclusions complétées pour .slnx, .vsconfig et caches Python. Aucun cache, fichier de connexion ou jeton détecté dans les fichiers texte suivis lors du contrôle final.
+- Rapports locaux : Artifacts/CleanupValidation/index.json (8 succès), Artifacts/AssetValidation.json et Artifacts/DeliveryValidation.json (26 empreintes du build).
+- Vidéo renouvelée : 835 images du viewport, environ 59 secondes, mix audio Unreal non silencieux et non écrêté.
+- Avertissements d’outillage : Unreal signale que la version installée du compilateur Visual Studio n’est pas sa version préférée, et des dépréciations dans les en-têtes du moteur. Ils n’empêchent ni la compilation ni le packaging ; les tests du projet n’ont aucun avertissement.
+
+Les copies locales issues de l’ouverture avec une association de moteur incorrecte ont été comparées : aucune modification de gameplay propre à ces copies. Leurs sauvegardes et réglages ont été préservés. La progression de la copie la plus récente (16 000 points) a été reprise dans le projet éditeur principal ; la sauvegarde du jeu autonome est restée distincte et intacte.
+
+Le contrôle automatique de suppression récursive a refusé l’effacement des copies et des caches sans fournir de motif détaillé. Ils ont donc été déplacés hors du projet dans `C:/Users/Over/Documents/OrbitBreaker_Backup_2026-09-30`. Cette archive privée n’est ni versionnée ni destinée à la remise ; elle occupe toujours de l’espace disque. Le nettoyage des assets suivis, lui, est effectif et conservé dans les historiques.
