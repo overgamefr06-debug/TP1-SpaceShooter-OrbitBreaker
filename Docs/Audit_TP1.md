@@ -1,6 +1,6 @@
 # Vérification du TP1 — 30 septembre 2026
 
-Référence : « TP1 - Space Shooter - Revison Control.pdf », trois pages, fourni par l'étudiant. Cette vérification confronte le barème aux sources, aux assets, aux tests du jeu et aux dépôts. Elle ne constitue ni une note attribuée par le professeur ni une confirmation administrative de remise.
+Référence : « TP1 - Space Shooter - Revison Control.pdf », trois pages. Cette vérification confronte le barème aux sources, aux assets, aux tests du jeu et aux dépôts. Elle ne constitue ni une note attribuée par le professeur ni une confirmation administrative de remise.
 
 ## Barème, point par point
 
@@ -35,7 +35,7 @@ Référence : « TP1 - Space Shooter - Revison Control.pdf », trois pages, four
 
 Le build autonome complet doit rester sous 500 000 000 octets et se trouver dans **main Perforce**, pas uniquement sur le poste local. Le build n'est pas demandé dans GitHub et y reste ignoré. Les captures d'historique montrent les exercices de conflit, pas seulement une liste de changements récents.
 
-Les trois pièces obligatoires sont `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`. La vidéo est une capture du véritable viewport Unreal ; quatre bonus et une paire d'astéroïdes y sont mis en scène pour démontrer les mécaniques, sans modifier la progression réelle du joueur.
+Les trois pièces obligatoires sont `Files/GithubCommits.png`, `Files/PerforceCommits.png` et `Files/VideoDemoJeux.mp4`. La vidéo actuelle est l’enregistrement OBS du 1er octobre 2026, copié sans réencodage sous le nom exigé. Elle remplace la démonstration automatisée précédente.
 
 Validation finale : **8 tests réussis, 0 échec, 0 avertissement de test**, compilation et packaging Shipping réussis. Build : **371 653 399 octets (371,65 Mo)**, 26 fichiers comparés par empreinte avec la sortie du packaging. La synchronisation des branches et streams est vérifiée au moment de publier ce jalon. Les rapports détaillés restent en local dans Artifacts, conformément aux exclusions.
 
@@ -58,7 +58,7 @@ Le document indique « Valeur : 25 pt » en première page mais « TOTAL /30 » 
 - Trois scripts de prototype remplacés par les seuls imports actifs ; réimportation complète exécutée avec succès. Tous les scripts Python conservés passent l’analyse syntaxique.
 - Exclusions complétées pour .slnx, .vsconfig et caches Python. Aucun cache, fichier de connexion ou jeton détecté dans les fichiers texte suivis lors du contrôle final.
 - Rapports locaux : Artifacts/CleanupValidation/index.json (8 succès), Artifacts/AssetValidation.json et Artifacts/DeliveryValidation.json (26 empreintes du build).
-- Vidéo renouvelée : 835 images du viewport, environ 59 secondes, mix audio Unreal non silencieux et non écrêté.
+- Démonstration automatisée validée le 30 septembre : 835 images du viewport, environ 59 secondes, mix audio Unreal non silencieux et non écrêté. Cette ancienne démonstration a été remplacée le 1er octobre par la nouvelle vidéo (82,70 s, 720p/30, audio AAC, 63 728 625 octets), dont le décodage intégral et l’identité avec le fichier source ont été vérifiés. Les résultats de tests ci-dessus concernent toujours le build inchangé.
 - Avertissements d’outillage : Unreal signale que la version installée du compilateur Visual Studio n’est pas sa version préférée, et des dépréciations dans les en-têtes du moteur. Ils n’empêchent ni la compilation ni le packaging ; les tests du projet n’ont aucun avertissement.
 
 Les copies locales issues de l’ouverture avec une association de moteur incorrecte ont été comparées : aucune modification de gameplay propre à ces copies. Leurs sauvegardes et réglages ont été préservés. La progression de la copie la plus récente (16 000 points) a été reprise dans le projet éditeur principal ; la sauvegarde du jeu autonome est restée distincte et intacte.
